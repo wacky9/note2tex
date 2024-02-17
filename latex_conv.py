@@ -1,3 +1,5 @@
+import csv
+
 tokenMapping = {
   "\plus": "+",
   "\minus": "\\",
@@ -43,8 +45,18 @@ def writeNewLine(latexFile):
     print("\\\\", file=latexFile)
 
 if __name__ == '__main__':
+    
+    #Open the generated latex file and the intermediate csv file.
     latexFile = open("latex.tex", "w")
+    intermediateFile = open("intermediate.csv", "r")
+
+    #Output the latex header
     writeFileHeader(latexFile, "Test", "Me")
-    writeNewLine(latexFile)
+
+    csvReader = csv.reader(intermediateFile, delimiter=',')
+    for row in csvReader:
+        writeNewLine(latexFile)
+
+    #Output the latex footer
     writeFileFooter(latexFile)
     
