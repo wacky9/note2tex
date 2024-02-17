@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import filters
 import cv2
-import scipy
 
 #Determines how to binarize data
 #Assumes images is between [0,1] and grayscale
@@ -75,8 +74,6 @@ def get_line_bounding_boxes(Im):
                 #io.imshow(region.image, cmap='gray'); io.show()
 
     return bounding_boxes
-    #largest_region = regions[0].image
-    #io.imshow(largest_region, cmap='gray'); io.show()
 
 #standardizes each image to a certain size and color scheme
 def standardize(Im,size):
