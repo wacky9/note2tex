@@ -99,7 +99,7 @@ def expand(Im,size):
     return Im
 
 def main():
-    line_num = 3
+    line_num = 1
     test = io.imread('White_Data.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
