@@ -3,7 +3,7 @@ import os
 
 tokenMapping = {
   "\plus": "+",
-  "\minus": "\\",
+  "\minus": "-",
   "\\times": "\\cdot",
   "\divide": "/",
   "!": "!",
@@ -53,9 +53,12 @@ def writeNewLine(latexFile):
     latexFile.write("$\n\\\\$")
 
 def generateLatexPdf():
+    
+    #Generate the pdf
     execution_string = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "c:/Users/User/Desktop/hack-ai-2024/latex.tex"'
     execution_string_local = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "./latex.tex"'
     os.system(execution_string_local)
+
 
 if __name__ == '__main__':
     
