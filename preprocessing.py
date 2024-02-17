@@ -38,11 +38,37 @@ def segment_lines(Im):
     lines = segments[::2]
     return lines
 
-def CC(Im):
+#Returns array of all bounding boxes for line
+def get_line_bounding_boxes(Im):
+
+    #Get regions and sort by their x centroid values
     from skimage.measure import label, regionprops
     labels = label(Im,background=1)
     regions = regionprops(labels)
-    return regions
+    regions.sort(key=lambda x: x.centroid[1], reverse=False)
+
+    #Get all the bounding boxes
+    x_threshold = 10
+    bounding_boxes = []
+    for i in range(1,len(regions)):
+        region_prev = regions[i-1]
+        region_curr = regions[i]
+
+        #If two regions are overtop one another
+        if region_curr.centroid[1] - region_prev.centroid[1] < 10:
+            minrow_1, mincol_1, maxrow_1, maxcol_1 = region_prev.bbox
+            minrow_2, mincol_2, maxrow_2, maxcol_2 = region_curr.bbox
+            bounding_boxes.append((min(minrow_1, minrow_2),
+                                   min(mincol_1, mincol_2),
+                                   max(maxrow_1, maxrow_2),
+                                   max(maxcol_1, maxcol_2)))
+        else:
+            bounding_boxes.append(region_curr.bbox)
+            #io.imshow(region.image, cmap='gray'); io.show()
+
+    return bounding_boxes
+    #largest_region = regions[0].image
+    #io.imshow(largest_region, cmap='gray'); io.show()
 
 #standardizes each image to a certain size and color scheme
 def standardize(Im,size):
@@ -55,10 +81,12 @@ def main():
     test = io.imread('White_Data.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
-    io.imshow(lines[1]); io.show()
-    regions = CC(lines[1])
-    standard = standardize(regions[0].image,SIZE)
-    io.imshow(standard); io.show()
+    io.imshow(lines[0],cmap='gray'); io.show()
+    boxes = get_line_bounding_boxes(lines[0])
+    first_box = boxes[2]
+    print(first_box)
+    Im = lines[0][first_box[0]:first_box[2],first_box[1]:first_box[3]]
+    io.imshow(Im); io.show()
     return 0
 
 if __name__=="__main__": 
