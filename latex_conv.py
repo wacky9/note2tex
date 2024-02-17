@@ -2,7 +2,7 @@ import csv
 
 tokenMapping = {
   "\plus": "+",
-  "\minus": "\\",
+  "\minus": "-",
   "\\times": "\\cdot",
   "\divide": "/",
   "!": "!",
