@@ -50,7 +50,7 @@ def writeToken(latexFile, token):
         latexFile.write(token)
 
 def writeNewLine(latexFile):
-    latexFile.write("$\n\\\\$")
+    latexFile.write("$\\\\\n$")
 
 def generateLatexPdf():
     
