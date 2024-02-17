@@ -101,21 +101,39 @@ def expand(Im,size):
         Im = np.pad(Im,pad_width=((0,0),(left,right)),mode='constant',constant_values=1)
     return Im
 
-
+def get_supersubscript_labling(boxes):
+    starting_y = (boxes[0][0] + boxes[0][2] / 2)
+    tolerance = 10
+    labels = []
+    for i in range(len(boxes)):
+        curr_y = (boxes[i][0] + boxes[i][2] / 2)
+        print(curr_y)
+        if abs(starting_y - curr_y) > tolerance and curr_y > starting_y:
+            labels.append("Super")
+        elif abs(starting_y - curr_y) > tolerance and curr_y < starting_y:
+            labels.append("Sub")
+        else:
+            labels.append("Normal")
+    return labels
 
 
 def main():
-    line_num = 1
+    line_num = 3
     test = io.imread('White_Data.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
     io.imshow(lines[line_num],cmap='gray'); io.show()
     boxes = get_line_bounding_boxes(lines[line_num])
+    labels = get_supersubscript_labling(boxes)
+    counter = 0
     for box in boxes:
         print(box)
+        print(labels[counter])
         Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
         io.imshow(Im); io.show()
+        counter += 1
     return 0
+
 
 if __name__=="__main__": 
     main() 
