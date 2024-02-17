@@ -80,20 +80,40 @@ def get_line_bounding_boxes(Im):
 
 #standardizes each image to a certain size and color scheme
 def standardize(Im,size):
+    Im = expand(Im,size)
     Im = Im.astype(np.uint8)*255
     Im = cv2.resize(Im,size,interpolation=cv2.INTER_CUBIC)
     return Im
 
+#Add whitespace so all dimensions are at least size
+def expand(Im,size):
+    #row expand
+    rowdiff = Im.shape[0]-size[0]
+    if rowdiff<0:
+        top = -rowdiff//2
+        bottom = -rowdiff//2-rowdiff%2
+        Im = np.pad(Im,pad_width=((top,bottom),(0,0)),mode='constant',constant_values=1)
+    #column expand
+    coldiff = Im.shape[1]-size[1]
+    if coldiff<0:
+        left = -coldiff//2
+        right = -coldiff//2-coldiff%2
+        Im = np.pad(Im,pad_width=((0,0),(left,right)),mode='constant',constant_values=1)
+    return Im
+
+
+
 
 def main():
+    line_num = 1
     test = io.imread('White_Data.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
-    io.imshow(lines[9],cmap='gray'); io.show()
-    boxes = get_line_bounding_boxes(lines[9])
+    io.imshow(lines[line_num],cmap='gray'); io.show()
+    boxes = get_line_bounding_boxes(lines[line_num])
     for box in boxes:
         print(box)
-        Im = lines[9][box[0]:box[2],box[1]:box[3]]
+        Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
         io.imshow(Im); io.show()
     return 0
 
