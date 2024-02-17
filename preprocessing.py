@@ -7,8 +7,8 @@ import scipy
 
 #Determines how to binarize data
 #Assumes images is between [0,1] and grayscale
-threshold = 0.95
-
+THRESHOLD = 0.95
+TOLERANCE = 0.05
 #Potential problem: need to detect if image is [0,1] or [0,255]
 def binarize(Im,rgb=True):
     grayIm = skimage.color.rgb2gray(Im[:,:,0:3])
@@ -16,25 +16,31 @@ def binarize(Im,rgb=True):
 
 #Detects information about dividers
 def divider_info(Im):
-    first_divider = -1
-    divider_height = -1
-    spacing = -1
     #detection method: sum each row. Rows that are mostly pixels are dividers
     density = (Im.shape[1]-np.sum(Im,axis=1))/Im.shape[1]
+    #The maximum density is going to be a divider
     divider_density = np.max(density)
-    print(divider_density)
-    return (first_divider,divider_height,spacing)
+    #Detect which lines are close to the max density, within a tolerance
+    compare = np.full((density.shape),divider_density)
+    dividers = np.isclose(density,compare,rtol=TOLERANCE)
+    #Get indices of dividers and use to find info
+    divider_indices = np.argwhere(dividers)
+    print(divider_indices.shape)
+    divider_indices = divider_indices + np.array([0,1])
+    return divider_indices
 
-#Detects horizontal lines and returns an array of lines
-def detect_lines(Im):
-    first_divider, divider_thickness,spacing = divider_info(Im)
-    return 1
+#Segments horizontal lines and returns an array of lines
+def segment_lines(Im):
+    indices = divider_info(Im)
+    segments = np.split(Im,indices[:,0])
+    lines = segments[::2]
+    return lines
 
 def main():
-    test = io.imread('Test_Data.png')
-    bin = binarize(test)>threshold
-    detect_lines(bin)
-    io.imshow(bin); io.show()
+    test = io.imread('White_Data.png')
+    bin = binarize(test)>THRESHOLD
+    segment_lines(bin)
+    #io.imshow(bin); io.show()
     return 0
 
 if __name__=="__main__": 
