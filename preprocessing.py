@@ -50,21 +50,29 @@ def get_line_bounding_boxes(Im):
     #Get all the bounding boxes
     x_threshold = 10
     bounding_boxes = []
-    for i in range(1,len(regions)):
-        region_prev = regions[i-1]
-        region_curr = regions[i]
-
-        #If two regions are overtop one another
-        if region_curr.centroid[1] - region_prev.centroid[1] < 10:
-            minrow_1, mincol_1, maxrow_1, maxcol_1 = region_prev.bbox
-            minrow_2, mincol_2, maxrow_2, maxcol_2 = region_curr.bbox
-            bounding_boxes.append((min(minrow_1, minrow_2),
-                                   min(mincol_1, mincol_2),
-                                   max(maxrow_1, maxrow_2),
-                                   max(maxcol_1, maxcol_2)))
+    skip_current=False
+    for i in range(0,len(regions)):
+        if skip_current:
+            skip_current=False
+            continue
+        if i == len(regions)-1:
+            bounding_boxes.append(regions[i].bbox)
         else:
-            bounding_boxes.append(region_curr.bbox)
-            #io.imshow(region.image, cmap='gray'); io.show()
+            region_curr = regions[i]
+            region_next = regions[i+1]
+
+            #If two regions are overtop one another
+            if region_next.centroid[1] - region_curr.centroid[1] < 10:
+                minrow_1, mincol_1, maxrow_1, maxcol_1 = region_curr.bbox
+                minrow_2, mincol_2, maxrow_2, maxcol_2 = region_next.bbox
+                bounding_boxes.append((min(minrow_1, minrow_2),
+                                       min(mincol_1, mincol_2),
+                                       max(maxrow_1, maxrow_2),
+                                       max(maxcol_1, maxcol_2)))
+                skip_current=True
+            else:
+                bounding_boxes.append(region_curr.bbox)
+                #io.imshow(region.image, cmap='gray'); io.show()
 
     return bounding_boxes
     #largest_region = regions[0].image
@@ -83,10 +91,10 @@ def main():
     lines = segment_lines(bin)
     io.imshow(lines[0],cmap='gray'); io.show()
     boxes = get_line_bounding_boxes(lines[0])
-    first_box = boxes[6]
-    print(first_box)
-    Im = lines[0][first_box[0]:first_box[2],first_box[1]:first_box[3]]
-    io.imshow(Im); io.show()
+    for box in boxes:
+        print(box)
+        Im = lines[0][box[0]:box[2],box[1]:box[3]]
+        io.imshow(Im); io.show()
     return 0
 
 if __name__=="__main__": 
