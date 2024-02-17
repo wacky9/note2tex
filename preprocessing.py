@@ -12,7 +12,7 @@ THRESHOLD = 0.95
 TOLERANCE = 0.05
 SIZE = (32,32)
 #Potential problem: need to detect if image is [0,1] or [0,255]
-def binarize(Im,rgb=True):
+def binarize(Im):
     grayIm = skimage.color.rgb2gray(Im[:,:,0:3])
     return grayIm
 
@@ -28,15 +28,13 @@ def divider_info(Im):
     #Get indices of dividers and use to find info
     divider_indices = np.argwhere(dividers)
     divider_indices = divider_indices[:,0]
-    print(divider_indices)
-    divider_indices = divider_indices + np.array([[0],[1]])
-    print(divider_indices)
+    divider_indices[1::2]+=2
     return divider_indices
 
 #Segments horizontal lines and returns an array of lines
 def segment_lines(Im):
     indices = divider_info(Im)
-    segments = np.split(Im,indices[:,0])
+    segments = np.split(Im,indices)
     lines = segments[::2]
     return lines
 
@@ -44,22 +42,23 @@ def CC(Im):
     from skimage.measure import label, regionprops
     labels = label(Im,background=1)
     regions = regionprops(labels)
-    largest_region = regions[0].image
-    io.imshow(largest_region, cmap='gray'); io.show()
+    return regions
 
 #standardizes each image to a certain size and color scheme
 def standardize(Im,size):
+    Im = Im.astype(np.uint8)*255
     Im = cv2.resize(Im,size,interpolation=cv2.INTER_CUBIC)
-    io.imshow(Im); io.show()
+    return Im
 
 
 def main():
     test = io.imread('White_Data.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
-    io.imshow(lines[1],cmap='gray'); io.show()
-    CC(lines[1])
-    #io.imshow(bin); io.show()
+    io.imshow(lines[1]); io.show()
+    regions = CC(lines[1])
+    standard = standardize(regions[0].image,SIZE)
+    io.imshow(standard); io.show()
     return 0
 
 if __name__=="__main__": 
