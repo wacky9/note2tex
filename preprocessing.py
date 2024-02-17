@@ -89,11 +89,11 @@ def main():
     test = io.imread('White_Data.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
-    io.imshow(lines[0],cmap='gray'); io.show()
-    boxes = get_line_bounding_boxes(lines[0])
+    io.imshow(lines[9],cmap='gray'); io.show()
+    boxes = get_line_bounding_boxes(lines[9])
     for box in boxes:
         print(box)
-        Im = lines[0][box[0]:box[2],box[1]:box[3]]
+        Im = lines[9][box[0]:box[2],box[1]:box[3]]
         io.imshow(Im); io.show()
     return 0
 
