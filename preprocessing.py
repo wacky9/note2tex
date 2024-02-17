@@ -3,6 +3,7 @@ from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import filters
+import opencv
 import scipy
 
 #Determines how to binarize data
@@ -25,8 +26,10 @@ def divider_info(Im):
     dividers = np.isclose(density,compare,rtol=TOLERANCE)
     #Get indices of dividers and use to find info
     divider_indices = np.argwhere(dividers)
-    print(divider_indices.shape)
-    divider_indices = divider_indices + np.array([0,1])
+    divider_indices = divider_indices[:,0]
+    print(divider_indices)
+    divider_indices = divider_indices + np.array([[0],[1]])
+    print(divider_indices)
     return divider_indices
 
 #Segments horizontal lines and returns an array of lines
@@ -36,10 +39,19 @@ def segment_lines(Im):
     lines = segments[::2]
     return lines
 
+def CC(Im):
+    from skimage.measure import label, regionprops, regionprops_table
+    labels = label(Im,background=1)
+    regions = regionprops(labels)
+    largest_region = regions[0].image
+    io.imshow(largest_region, cmap='gray'); io.show()
+
 def main():
     test = io.imread('White_Data.png')
     bin = binarize(test)>THRESHOLD
-    segment_lines(bin)
+    lines = segment_lines(bin)
+    io.imshow(lines[1],cmap='gray'); io.show()
+    CC(lines[1])
     #io.imshow(bin); io.show()
     return 0
 
