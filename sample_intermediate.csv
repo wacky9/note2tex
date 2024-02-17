@@ -3,4 +3,4 @@ c,\minus,d,\plus,z,\times,\pi
 (,1,2,\divide,e,)
 \startsqrt,\minus,5,\plus,5,\endsqrt
 3,\startexp,z,!,\endexp
-f,(,x,\comma,y,),\equals,s,i,n,(,
+f,(,x,\comma,y,),\equals,s,i,n,(

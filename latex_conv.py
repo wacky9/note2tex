@@ -13,10 +13,13 @@ tokenMapping = {
   ")": ")",
 
   "\\startsqrt": "\sqrt{",
-  "\\endqrt": "}",
+  "\\endsqrt": "}",
 
   "\startexp": "^{",
-  "\endexp": "}"
+  "\endexp": "}",
+
+  "\pi" : "\\pi",
+  "\equals" : "="
 
 }
 
@@ -35,9 +38,10 @@ def writeFileHeader(latexFile, titleName, authorName):
     print("\\date\\today\n", file=latexFile)
     print("\\begin{document}", file=latexFile)
     print("\\maketitle\n", file=latexFile)
+    latexFile.write("$")
 
 def writeFileFooter(latexFile):
-    print("\n\\end{document}", file=latexFile)
+    print("$\n\n\\end{document}", file=latexFile)
 
 def writeToken(latexFile, token):
     if token[0] == "\\":
@@ -46,7 +50,7 @@ def writeToken(latexFile, token):
         latexFile.write(token)
 
 def writeNewLine(latexFile):
-    print("\\\\", file=latexFile)
+    latexFile.write("$\n\\\\$")
 
 def generateLatexPdf():
     execution_string = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "c:/Users/User/Desktop/hack-ai-2024/latex.tex"'
@@ -63,8 +67,10 @@ if __name__ == '__main__':
     writeFileHeader(latexFile, "Test", "Me")
 
     csvReader = csv.reader(intermediateFile, delimiter=',')
-    #for row in csvReader:
-    #    writeNewLine(latexFile)
+    for row in csvReader:
+        for token in row:
+            writeToken(latexFile, token)
+        writeNewLine(latexFile)
 
     #Output the latex footer
     writeFileFooter(latexFile)
