@@ -3,13 +3,14 @@ from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import filters
-import opencv
+import cv2
 import scipy
 
 #Determines how to binarize data
 #Assumes images is between [0,1] and grayscale
 THRESHOLD = 0.95
 TOLERANCE = 0.05
+SIZE = (32,32)
 #Potential problem: need to detect if image is [0,1] or [0,255]
 def binarize(Im,rgb=True):
     grayIm = skimage.color.rgb2gray(Im[:,:,0:3])
@@ -40,11 +41,17 @@ def segment_lines(Im):
     return lines
 
 def CC(Im):
-    from skimage.measure import label, regionprops, regionprops_table
+    from skimage.measure import label, regionprops
     labels = label(Im,background=1)
     regions = regionprops(labels)
     largest_region = regions[0].image
     io.imshow(largest_region, cmap='gray'); io.show()
+
+#standardizes each image to a certain size and color scheme
+def standardize(Im,size):
+    Im = cv2.resize(Im,size,interpolation=cv2.INTER_CUBIC)
+    io.imshow(Im); io.show()
+
 
 def main():
     test = io.imread('White_Data.png')
