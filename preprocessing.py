@@ -27,14 +27,18 @@ def divider_info(Im):
     #Get indices of dividers and use to find info
     divider_indices = np.argwhere(dividers)
     divider_indices = divider_indices[:,0]
-    divider_indices[1::2]+=2
+    #Prevents dividers from being caught in lines
+    for i in range(len(divider_indices)-1):
+        if divider_indices[i+1]-divider_indices[i] != 1:
+            divider_indices[i] += 1
     return divider_indices
 
 #Segments horizontal lines and returns an array of lines
 def segment_lines(Im):
     indices = divider_info(Im)
     segments = np.split(Im,indices)
-    lines = segments[::2]
+    #filters out all lines that are too small
+    lines = list(filter(lambda x: x.shape[0]>10,segments))
     return lines
 
 #Returns array of all bounding boxes for line
@@ -62,19 +66,21 @@ def get_line_bounding_boxes(Im):
 
             #If two regions are overtop one another
             if region_next.centroid[1] - region_curr.centroid[1] < 10:
-                minrow_1, mincol_1, maxrow_1, maxcol_1 = region_curr.bbox
-                minrow_2, mincol_2, maxrow_2, maxcol_2 = region_next.bbox
-                bounding_boxes.append((min(minrow_1, minrow_2),
-                                       min(mincol_1, mincol_2),
-                                       max(maxrow_1, maxrow_2),
-                                       max(maxcol_1, maxcol_2)))
+                combine_bounding_boxes(region_curr.bbox,region_next.bbox)
                 skip_current=True
             else:
                 bounding_boxes.append(region_curr.bbox)
                 #io.imshow(region.image, cmap='gray'); io.show()
-
     return bounding_boxes
 
+
+def combine_bounding_boxes(A,B):
+    minrow_1, mincol_1, maxrow_1, maxcol_1 = A
+    minrow_2, mincol_2, maxrow_2, maxcol_2 = B
+    return ((min(minrow_1, minrow_2),
+             min(mincol_1, mincol_2),
+             max(maxrow_1, maxrow_2),
+             max(maxcol_1, maxcol_2)))
 #standardizes each image to a certain size and color scheme
 def standardize(Im,size):
     Im = expand(Im,size)
@@ -82,7 +88,7 @@ def standardize(Im,size):
     Im = cv2.resize(Im,size,interpolation=cv2.INTER_CUBIC)
     return Im
 
-#Add whitespace so all dimensions are at least size
+#Add whitespace so all dimensions are at least size dimensions
 def expand(Im,size):
     #row expand
     rowdiff = Im.shape[0]-size[0]
@@ -115,8 +121,8 @@ def get_supersubscript_labling(boxes):
 
 
 def main():
-    line_num = 3
-    test = io.imread('White_Data.png')
+    line_num = 5
+    test = io.imread('toby_2.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
     io.imshow(lines[line_num],cmap='gray'); io.show()
