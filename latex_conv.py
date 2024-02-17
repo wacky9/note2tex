@@ -48,6 +48,7 @@ def writeNewLine(latexFile):
 if __name__ == '__main__':
     latexFile = open("latex.tex", "w")
     writeFileHeader(latexFile, "Test", "Me")
-    writeNewLine(latexFile)
+    writeToken(latexFile, "a")
+    writeToken(latexFile, "\\times")
     writeFileFooter(latexFile)
     
