@@ -60,11 +60,16 @@ if __name__ == '__main__':
     #Output the latex header
     writeFileHeader(latexFile, "Test", "Me")
 
+    # Read CSV file
     csvReader = csv.reader(intermediateFile, delimiter=',')
-    for row in csvReader:
+    rows = list(csvReader)  # Store rows in a list
+    numRows = len(rows)
+
+    for i, row in enumerate(rows, start=1):
         for token in row:
             writeToken(latexFile, token)
-        writeNewLine(latexFile)
+        if i < numRows:
+            writeNewLine(latexFile)
 
     #Output the latex footer
     writeFileFooter(latexFile)
