@@ -12,10 +12,13 @@ tokenMapping = {
   ")": ")",
 
   "\\startsqrt": "\sqrt{",
-  "\\endqrt": "}",
+  "\\endsqrt": "}",
 
   "\startexp": "^{",
-  "\endexp": "}"
+  "\endexp": "}",
+
+  "\pi" : "\\pi",
+  "\equals" : "="
 
 }
 
@@ -59,6 +62,8 @@ if __name__ == '__main__':
 
     csvReader = csv.reader(intermediateFile, delimiter=',')
     for row in csvReader:
+        for token in row:
+            writeToken(latexFile, token)
         writeNewLine(latexFile)
 
     #Output the latex footer
