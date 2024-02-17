@@ -3,4 +3,8 @@ c,\minus,d,\plus,z,\times,\pi
 (,1,2,\divide,e,)
 \startsqrt,\minus,5,\plus,5,\endsqrt
 3,\startexp,z,!,\endexp
+<<<<<<< HEAD
+f,(,x,\comma,y,),\equals,s,i,n,(,
+=======
 f,(,x,\comma,y,),\equals,s,i,n,(,3,)
+>>>>>>> db1ff3c04b8fec23904e6f91cf4b3a3dde8f36b7

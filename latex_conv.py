@@ -1,4 +1,5 @@
 import csv
+import os
 
 tokenMapping = {
   "\plus": "+",
@@ -51,6 +52,11 @@ def writeToken(latexFile, token):
 def writeNewLine(latexFile):
     latexFile.write("$\n\\\\$")
 
+def generateLatexPdf():
+    execution_string = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "c:/Users/User/Desktop/hack-ai-2024/latex.tex"'
+    execution_string_local = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "./latex.tex"'
+    os.system(execution_string_local)
+
 if __name__ == '__main__':
     
     #Open the generated latex file and the intermediate csv file.
@@ -73,4 +79,7 @@ if __name__ == '__main__':
 
     #Output the latex footer
     writeFileFooter(latexFile)
+
+    #Generate the latex pdf
+    generateLatexPdf()
     
