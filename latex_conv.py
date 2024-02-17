@@ -72,17 +72,25 @@ def writeFileHeader(latexFile, titleName, authorName):
 def writeFileFooter(latexFile):
     print("$\n\n\\end{document}", file=latexFile)
 
-def writeToken(latexFile, token):
+def writeToken(latexFile, token, inMath):
     if token[0] == "\\":
+        if not inMath:
+            latexFile.write("}")
+            inMath = True
         latexFile.write(tokenMapping[token])
     else:
-        latexFile.write("\\textrm{" + token + "}")
+        if inMath:
+            latexFile.write("\\textrm{")
+            inMath = False
+        latexFile.write(token)
+    return inMath
 
-def writeNewLine(latexFile):
+def writeNewLine(latexFile, inMath):
+    if not inMath:
+        latexFile.write("}")
     latexFile.write("$\\\\\n$")
 
 def generateLatexPdf():
-    
     #Generate the pdf
     execution_string = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "c:/Users/User/Desktop/hack-ai-2024/latex.tex"'
     execution_string_local = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "./latex.tex"'
@@ -102,12 +110,14 @@ if __name__ == '__main__':
     csvReader = csv.reader(intermediateFile, delimiter=',')
     rows = list(csvReader)  # Store rows in a list
     numRows = len(rows)
+    inMath = True
 
     for i, row in enumerate(rows, start=1):
         for token in row:
-            writeToken(latexFile, token)
+            inMath = writeToken(latexFile, token, inMath)
         if i < numRows:
-            writeNewLine(latexFile)
+            writeNewLine(latexFile, inMath)
+            inMath = True
 
     #Output the latex footer
     writeFileFooter(latexFile)
