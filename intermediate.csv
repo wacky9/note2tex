@@ -1,7 +1,7 @@
 a,\plus,b,\plus,c
 c,\minus,d,\plus,z,\times,\pi
 (,1,2,\divide,e,)
-\startsqrt,\minus,5,\plus,5,\endsqrt
+\startsqrt,\minus,5,\plus,5,\plus,\startFrac,3,\endNumerator,7,\endFrac,\endsqrt
 3,\startexp,z,!,\endexp
 f,(,x,\comma,y,),\equals,s,i,n,(,3,)
 t,h,i,s, ,i,s, ,a, ,t,e,s,t
@@ -10,4 +10,4 @@ t,h,i,s, ,i,s, ,a, ,t,e,s,t
 \comma,\notEqual,\leq,\geq
 y,\epsilon,A,\subset,\bbZ,\startexp,+,\endexp
 x,\startSubscript,0,\endSubscript,\equals,\startFrac,3,\endNumerator,7,\endFrac
-\forall,\epsilon,\exists,\delta,>,0,s,.,t,.,|,f,(,x,),\minus,L,|,<,\epsilon
+\forall,\epsilon,\exists,\delta,\>,0,s,.,t,.,\|,f,(,x,),\minus,L,\|,\<,\epsilon

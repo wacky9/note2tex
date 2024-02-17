@@ -4,15 +4,18 @@ import os
 tokenMapping = {
   "\plus": "+",
   "\minus": "-",
-  "\\times": "\\cdot ",
+  "\\times": "\\cdot",
   "\divide": "/",
 
   "\equals": "=",
-  "\leq": "\\leq ",
-  "\geq": "\\geq ",
-  "\\notEqual": "\\neq ",
+  "\leq": "\\leq",
+  "\geq": "\\geq",
+  "\\notEqual": "\\neq",
 
-  "!": "!",
+  "\<": "<",
+  "\>": ">",
+  "\|": "|",
+
 
   "\\startsqrt": "\sqrt{",
   "\\endsqrt": "}",
@@ -73,7 +76,7 @@ def writeToken(latexFile, token):
     if token[0] == "\\":
         latexFile.write(tokenMapping[token])
     else:
-        latexFile.write(token)
+        latexFile.write("\\textrm{" + token + "}")
 
 def writeNewLine(latexFile):
     latexFile.write("$\\\\\n$")
