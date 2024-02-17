@@ -32,9 +32,10 @@ def writeFileHeader(latexFile, titleName, authorName):
     print("\\date\\today\n", file=latexFile)
     print("\\begin{document}", file=latexFile)
     print("\\maketitle\n", file=latexFile)
+    latexFile.write("$")
 
 def writeFileFooter(latexFile):
-    print("\n\\end{document}", file=latexFile)
+    print("$\n\n\\end{document}", file=latexFile)
 
 def writeToken(latexFile, token):
     if token[0] == "\\":
@@ -43,12 +44,17 @@ def writeToken(latexFile, token):
         latexFile.write(token)
 
 def writeNewLine(latexFile):
-    print("\\\\", file=latexFile)
+    latexFile.write("$\n\\\\$")
 
 if __name__ == '__main__':
     latexFile = open("latex.tex", "w")
     writeFileHeader(latexFile, "Test", "Me")
+
     writeToken(latexFile, "a")
     writeToken(latexFile, "\\times")
+    writeNewLine(latexFile)
+    writeToken(latexFile, "0")
+    writeToken(latexFile, "\divide")
+
     writeFileFooter(latexFile)
     
