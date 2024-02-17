@@ -63,6 +63,7 @@ def writeFileHeader(latexFile, titleName, authorName):
     print("\\date\\today\n", file=latexFile)
     print("\\begin{document}", file=latexFile)
     print("\\maketitle\n", file=latexFile)
+    print("\\noindent", file=latexFile)
     latexFile.write("$")
 
 def writeFileFooter(latexFile):
