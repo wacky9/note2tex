@@ -39,7 +39,10 @@ def writeFileFooter(latexFile):
     print("\n\\end{document}", file=latexFile)
 
 def writeToken(latexFile, token):
-    pass
+    if token[0] == "\\":
+        latexFile.write(tokenMapping[token])
+    else:
+        latexFile.write(token)
 
 def writeNewLine(latexFile):
     print("\\\\", file=latexFile)
