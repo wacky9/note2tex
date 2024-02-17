@@ -4,22 +4,47 @@ import os
 tokenMapping = {
   "\plus": "+",
   "\minus": "-",
-  "\\times": "\\cdot",
+  "\\times": "\\cdot ",
   "\divide": "/",
-  "!": "!",
-  "\comma": ",",
 
-  "(": "(",
-  ")": ")",
+  "\equals": "=",
+  "\leq": "\\leq ",
+  "\geq": "\\geq ",
+  "\\notEqual": "\\neq ",
+
+  "!": "!",
 
   "\\startsqrt": "\sqrt{",
   "\\endsqrt": "}",
-
   "\startexp": "^{",
   "\endexp": "}",
+  "\startSubscript": "_{",
+  "\endSubscript": "}",
+  "\startFrac": "\\frac{",
+  "\endNumerator": "}{",
+  "\endFrac": "}",
 
-  "\pi" : "\\pi",
-  "\equals" : "="
+  "\comma": ",",
+
+  "\\rightArrow": "\\Rightarrow ",
+  "\leftArrow": "\\Leftarrow ",
+  "\doubleArrow": "\\Leftrightarrow ",
+
+  "\subset": "\\subset ",
+
+  "\\bbR": "\\mathbb{R} ",
+  "\\bbZ": "\\mathbb{Z} ",
+  "\\bbN": "\\mathbb{N} ",
+  "\\bbQ": "\\mathbb{Q} ",
+  "\\bbC": "\\mathbb{C} ",
+
+  "\pi": "\\pi ",
+  "\epsilon": "\\epsilon ",
+  "\delta": "\\delta ",
+
+  "\\forall": "\\forall ",
+  "\exists": "\\exists ",
+
 
 }
 
