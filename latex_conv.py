@@ -1,4 +1,21 @@
+tokenMapping = {
+  "\plus": "+",
+  "\minus": "\\",
+  "\\times": "\\cdot",
+  "\divide": "/",
+  "!": "!",
+  "\comma": ",",
 
+  "(": "(",
+  ")": ")",
+
+  "\\startsqrt": "\sqrt{",
+  "\\endqrt": "}",
+
+  "\startexp": "^{",
+  "\endexp": "}"
+
+}
 
 def writeFileHeader(latexFile, titleName, authorName):
     print("\\documentclass{article}", file=latexFile)
@@ -19,11 +36,15 @@ def writeFileHeader(latexFile, titleName, authorName):
 def writeFileFooter(latexFile):
     print("\\end{document}", file=latexFile)
 
-def parseToken(token):
+def writeToken(latexFile, token):
     pass
+
+def writeNewLine(latexFile):
+    print("\\\\", file=latexFile)
 
 if __name__ == '__main__':
     latexFile = open("latex.tex", "w")
-    writeFileHeader(latexFile, "Test", "Toby")
+    writeFileHeader(latexFile, "Test", "Me")
+    writeNewLine(latexFile)
     writeFileFooter(latexFile)
     
