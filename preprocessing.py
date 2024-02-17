@@ -10,6 +10,7 @@ import cv2
 THRESHOLD = 0.95
 TOLERANCE = 0.05
 SIZE = (32,32)
+Y_OVERLAP = 0.6
 #Potential problem: need to detect if image is [0,1] or [0,255]
 def binarize(Im):
     grayIm = skimage.color.rgb2gray(Im[:,:,0:3])
@@ -65,14 +66,21 @@ def get_line_bounding_boxes(Im):
             region_next = regions[i+1]
 
             #If two regions are overtop one another
-            if region_next.centroid[1] - region_curr.centroid[1] < 10:
-                combine_bounding_boxes(region_curr.bbox,region_next.bbox)
+            if overlap(region_curr.bbox,region_next.bbox)>Y_OVERLAP:
+                bounding_boxes.append(combine_bounding_boxes(region_curr.bbox,region_next.bbox))
                 skip_current=True
             else:
                 bounding_boxes.append(region_curr.bbox)
                 #io.imshow(region.image, cmap='gray'); io.show()
     return bounding_boxes
 
+#Determines the % of overlap between A & B, with reference to A
+#That is, if 75% of A overlaps with B, the value will be 0.75.
+def overlap(boxA,boxB):
+    diffOne = boxB[3]-boxA[1]
+    diffTwo = boxA[3]-boxB[1]
+    if diffOne>diffTwo: return diffTwo/(boxA[3]-boxA[1])
+    else: return diffOne/(boxA[3]-boxA[1])
 
 def combine_bounding_boxes(A,B):
     minrow_1, mincol_1, maxrow_1, maxcol_1 = A
@@ -121,7 +129,7 @@ def get_supersubscript_labling(boxes):
 
 
 def main():
-    line_num = 5
+    line_num = 0
     test = io.imread('toby_2.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
