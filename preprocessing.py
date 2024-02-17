@@ -83,7 +83,7 @@ def main():
     lines = segment_lines(bin)
     io.imshow(lines[0],cmap='gray'); io.show()
     boxes = get_line_bounding_boxes(lines[0])
-    first_box = boxes[2]
+    first_box = boxes[6]
     print(first_box)
     Im = lines[0][first_box[0]:first_box[2],first_box[1]:first_box[3]]
     io.imshow(Im); io.show()
