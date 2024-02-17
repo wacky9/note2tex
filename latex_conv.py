@@ -25,16 +25,16 @@ def writeFileHeader(latexFile, titleName, authorName):
     print("\\usepackage{amsmath}", file=latexFile)
     print("\\usepackage{graphicx}", file=latexFile)
     print("\\usepackage[]{amsthm}", file=latexFile)
-    print("\\usepackage[]{amssymb}", file=latexFile)
-    print("\\theoremstyle{remark}", file=latexFile)
+    print("\\usepackage[]{amssymb}\n", file=latexFile)
+    print("\\theoremstyle{remark}\n", file=latexFile)
     print("\\title{" + titleName + "}", file=latexFile)
     print("\\author{" + authorName + "}", file=latexFile)
-    print("\\date\\today", file=latexFile)
+    print("\\date\\today\n", file=latexFile)
     print("\\begin{document}", file=latexFile)
-    print("\\maketitle", file=latexFile)
+    print("\\maketitle\n", file=latexFile)
 
 def writeFileFooter(latexFile):
-    print("\\end{document}", file=latexFile)
+    print("\n\\end{document}", file=latexFile)
 
 def writeToken(latexFile, token):
     pass
