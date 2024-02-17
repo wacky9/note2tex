@@ -33,7 +33,7 @@ def predict_label(frame, model, labels):
 def init_model(model_filepath= 'data/model_20240217164634.pth'):
     # load model
     model_state = torch.load(model_filepath)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
     model = create_net()
     model.load_state_dict(model_state)
     model.to(device)

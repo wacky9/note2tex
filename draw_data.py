@@ -1,11 +1,15 @@
 from tkinter import Canvas, Tk, Button
 from PIL import Image, ImageDraw
 import datetime
+from recognition import *
 
 class DrawingApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Drawing App")
+
+        self.labels = sorted(get_label_list())
+        self.model = init_model()
 
         # Scale factor for canvas size to image size
         scale_factor = 10
@@ -17,7 +21,7 @@ class DrawingApp:
         self.canvas.pack()
 
         # Button to save drawing
-        save_button = Button(root, text="Classify", command=self.save_as_png)
+        save_button = Button(root, text="Classify", command=self.classify)
         save_button.pack()
 
         # Button to clear drawing
@@ -43,9 +47,14 @@ class DrawingApp:
         small_x2, small_y2 = scaled_x2 // 10, scaled_y2 // 10
         self.draw.rectangle([small_x1, small_y1, small_x2, small_y2], fill="black")
 
-    def save_as_png(self):
+    def classify(self):
         filename = str(datetime.datetime.now().strftime("%Y%m%d_%H%M%S")) + ".png"
         self.image.save(filename)
+
+        frame = io.imread(filename)
+        predicted_label, confidence = predict_label(frame, self.model, self.labels)
+        print(predicted_label, ',', confidence)
+
 
     def clear_drawing(self):
         # Clear both the canvas and the drawn image
