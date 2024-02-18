@@ -16,7 +16,6 @@ tokenMapping = {
   "\>": ">",
   "\|": "|",
 
-
   "\\startsqrt": "\sqrt{",
   "\\endsqrt": "}",
   "\startexp": "^{",
@@ -43,12 +42,12 @@ tokenMapping = {
 
   "\pi": "\\pi ",
   "\epsilon": "\\epsilon ",
-  "\delta": "\\delta ",
+  "\\theta": "\\theta",
 
   "\\forall": "\\forall ",
   "\exists": "\\exists ",
-
-
+  "\infty": "\\infty",
+  "\\to": "\\to"
 }
 
 def writeFileHeader(latexFile, titleName, authorName):
