@@ -19,6 +19,8 @@ def main(image_path):
             pred_line.append(predicted_label)
         preds.append(pred_line.copy())
         pred_line.clear()
+    
+    print(preds)
 
 if __name__ == '__main__':
     main(sys.argv[1])
