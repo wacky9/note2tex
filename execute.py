@@ -1,5 +1,6 @@
 from preprocessing import *
 from recognition import *
+from latex_conv import *
 import skimage
 from skimage import io
 import numpy as np
@@ -29,7 +30,7 @@ def main(image_path):
     with open('intermediate.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(preds)
-    latex_conv.performLatexGen()
+    performLatexGen()
 
 if __name__ == '__main__':
     main(sys.argv[1])
