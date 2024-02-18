@@ -2,7 +2,6 @@ import skimage
 from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
-from skimage import filters
 from enum import Enum
 from skimage.measure import label, regionprops
 from collections import namedtuple
@@ -14,7 +13,7 @@ THRESHOLD = 0.95
 TOLERANCE = 0.05
 SIZE = (32,32)
 Y_OVERLAP = 0.6
-MODE = 'TRAIN'
+MODE = 'TEST'
 
 class Group(Enum):
     FRAC = 1
@@ -263,10 +262,10 @@ def resolveGroups(groups,groups_indices,boxes,components,line):
 
 frame = namedtuple('frame','image label')
 
-def main():
+def preprocess(Image):
     if MODE == 'COMPLICATED':
         line_num = 0
-        test = io.imread('Test_Data2.png')
+        test = Image
         bin = binarize(test)>THRESHOLD
         lines = segment_lines(bin)
         #io.imshow(lines[line_num],cmap='gray'); io.show()
@@ -279,52 +278,49 @@ def main():
         for F in frames:
             print(F.label)
             io.imshow(F.image,cmap='gray'); io.show()
+        return []
     elif MODE == 'TEST':
-        IM = io.imread('White_Data.png')
+        IM = Image
         bin = binarize(IM)>THRESHOLD
-        io.imshow(bin); io.show()
         lines = segment_lines(bin)
-        io.imshow(lines[7]); io.show()
-        num = 0
+        frames = []
         for line_num in range(len(lines)):
-            if line_num != 7: continue
+            line = []
             components = get_components(lines[line_num])
             boxes = get_line_bounding_boxes(components)
-            path = 'test'  
             for box in boxes:
                 Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
-                io.imshow(Im,cmap='gray'); io.show()
-                #io.imsave(path+'/'+ str(num)+'.png',Im,check_contrast=False)
-                num+=1
+                line.append(Im)
+            frames.append[line.copy()]
+            line.clear()
+        return frames
     else:
         import os
-        train_0 = ['W','w','X','x','Y','y','Z','z','0','1','2',
+        train_0 = ['upperW','lowerw','upperX','lowerx','upperY','lowery','upperZ','lowerz','0','1','2',
                 '3','4','5','6','7','8','9','+','-','(',')']
-        train_1 = ['L','l','M','m','N','n','O','o','P','p','Q',
-                   'q','R','r','S','s','T','t','U','u','V','v']
+        train_1 = ['upperL','lowerl','upperM','lowerm','upperN','lowern','upperO','lowero','upperP','lowerp','upperQ',
+                   'lowerq','upperR','lowerr','upperS','lowers','upperT','lowert','upperU','loweru','upperV','lowerv']
         train_2 = ['dot','slash','less','greater','lessequal','greaterequal','=',
                    '≠',',','rarrow','larrow','biarrow',
                    'subset','real','integers','natural',
                    'rational','complex','pi','epsilon','theta','forall']
-        train_3 = ['A','a','B','b','C','c','D','d','E','e',
-                   'F','f','G','g','H','h','I','i','J','j',
-                   'K','k']
+        train_3 = ['upperA','lowera','upperB','lowerb','upperC','lowerc','upperD','lowerd','upperE','lowere',
+                   'upperF','lowerf','upperG','lowerg','upperH','lowerh','upperI','loweri','upperJ','lowerj',
+                   'upperK','lowerk']
         train_4 = ['exists','arrow2']
-        IM = io.imread('toby_train1.png')
+        IM = Image
         bin = binarize(IM)>THRESHOLD
         lines = segment_lines(bin)
         line_num = 0
-        for name in train_2:
-            num = 0
+        for name in train_4:
             if not os.path.isdir(name):
                 os.mkdir(name)
             components = get_components(lines[line_num])
             boxes = get_line_bounding_boxes(components)
+            num = 0
             for box in boxes:
                 Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
                 io.imsave(name+'/'+ str(num)+'.png',Im,check_contrast=False)
                 num+=1
-
-
-if __name__=="__main__": 
-    main() 
+            line_num+=1
+        return []
