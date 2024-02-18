@@ -10,4 +10,4 @@ t,h,i,s, ,i,s, ,a, ,t,e,s,t
 \comma,\notEqual,\leq,\geq
 y,\epsilon,A,\subset,\bbZ,\startexp,+,\endexp
 x,\startSubscript,0,\endSubscript,\equals,\startFrac,3,\endNumerator,7,\endFrac
-\forall,\epsilon,\exists,\delta,>,0,s,.,t,.,|,f,(,x,),\minus,L,|,<,\epsilon
+\forall,\epsilon,\exists,>,0,s,.,t,.,|,f,(,x,),\minus,L,|,<,\epsilon
