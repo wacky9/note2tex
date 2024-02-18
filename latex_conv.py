@@ -6,21 +6,48 @@ tokenMapping = {
   "\minus": "-",
   "\\times": "\\cdot",
   "\divide": "/",
-  "!": "!",
-  "\comma": ",",
 
-  "(": "(",
-  ")": ")",
+  "\equals": "=",
+  "\leq": "\\leq",
+  "\geq": "\\geq",
+  "\\notEqual": "\\neq",
+
+  "\<": "<",
+  "\>": ">",
+  "\|": "|",
 
   "\\startsqrt": "\sqrt{",
   "\\endsqrt": "}",
-
   "\startexp": "^{",
   "\endexp": "}",
+  "\startSubscript": "_{",
+  "\endSubscript": "}",
+  "\startFrac": "\\frac{",
+  "\endNumerator": "}{",
+  "\endFrac": "}",
 
-  "\pi" : "\\pi",
-  "\equals" : "="
+  "\comma": ",",
 
+  "\\rightArrow": "\\Rightarrow ",
+  "\leftArrow": "\\Leftarrow ",
+  "\doubleArrow": "\\Leftrightarrow ",
+
+  "\subset": "\\subset ",
+
+  "\\bbR": "\\mathbb{R} ",
+  "\\bbZ": "\\mathbb{Z} ",
+  "\\bbN": "\\mathbb{N} ",
+  "\\bbQ": "\\mathbb{Q} ",
+  "\\bbC": "\\mathbb{C} ",
+
+  "\pi": "\\pi ",
+  "\epsilon": "\\epsilon ",
+  "\\theta": "\\theta",
+
+  "\\forall": "\\forall ",
+  "\exists": "\\exists ",
+  "\infty": "\\infty",
+  "\\to": "\\to"
 }
 
 def writeFileHeader(latexFile, titleName, authorName):
@@ -38,6 +65,7 @@ def writeFileHeader(latexFile, titleName, authorName):
     print("\\date\\today\n", file=latexFile)
     print("\\begin{document}", file=latexFile)
     print("\\maketitle\n", file=latexFile)
+    print("\\noindent", file=latexFile)
     latexFile.write("$")
 
 def writeFileFooter(latexFile):
