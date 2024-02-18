@@ -3,6 +3,8 @@ from PIL import Image, ImageDraw
 import datetime
 from recognition import *
 
+OUTPUT_FOLDER = 'output'
+
 class DrawingApp:
     def __init__(self, root):
         self.root = root
@@ -40,7 +42,7 @@ class DrawingApp:
         scaled_x2, scaled_y2 = x + 5, y + 5  # Adjust the scale factor as needed
 
         # Draw on the larger canvas (rectangle instead of oval)
-        self.canvas.create_rectangle(scaled_x1, scaled_y1, scaled_x2, scaled_y2, fill="black", width=2)
+        self.canvas.create_rectangle(scaled_x1, scaled_y1, scaled_x2, scaled_y2, fill="black", width=1)
 
         # Draw on the smaller image (rectangle instead of line)
         small_x1, small_y1 = scaled_x1 // 10, scaled_y1 // 10
@@ -48,7 +50,7 @@ class DrawingApp:
         self.draw.rectangle([small_x1, small_y1, small_x2, small_y2], fill="black")
 
     def classify(self):
-        filename = str(datetime.datetime.now().strftime("%Y%m%d_%H%M%S")) + ".png"
+        filename = str(OUTPUT_FOLDER+'/'+datetime.datetime.now().strftime("_%H%M%S")) + ".png"
         self.image.save(filename)
 
         frame = io.imread(filename)
