@@ -88,7 +88,7 @@ def generateLatexPdf():
     os.system(execution_string_local)
 
 
-if __name__ == '__main__':
+def performLatexGen():
     
     #Open the generated latex file and the intermediate csv file.
     latexFile = open("latex.tex", "w")
