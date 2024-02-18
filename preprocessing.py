@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import filters
 from enum import Enum
+from skimage.measure import label, regionprops
+from collections import namedtuple
 import cv2
 
 #Determines how to binarize data
@@ -15,8 +17,8 @@ Y_OVERLAP = 0.6
 
 class Group(Enum):
     FRAC = 1
-    SQRT=2
-    COMB=3
+    SQRT = 2
+    COMB = 3
 
 #Potential problem: need to detect if image is [0,1] or [0,255]
 def binarize(Im):
@@ -49,15 +51,14 @@ def segment_lines(Im):
     lines = list(filter(lambda x: x.shape[0]>10,segments))
     return lines
 
-#Returns array of all bounding boxes for line
-def get_line_bounding_boxes(Im):
-
-    #Get regions and sort by their x centroid values
-    from skimage.measure import label, regionprops
+def get_components(Im):
     labels = label(Im,background=1)
     regions = regionprops(labels)
     regions.sort(key=lambda x: x.centroid[1], reverse=False)
+    return regions
 
+#Returns array of all bounding boxes for line
+def get_line_bounding_boxes(regions):
     #Get all the bounding boxes
     bounding_boxes = []
     skip_current=False
@@ -70,7 +71,6 @@ def get_line_bounding_boxes(Im):
         else:
             region_curr = regions[i]
             region_next = regions[i+1]
-
             #If two regions are overtop one another
             if overlap(region_curr.bbox,region_next.bbox)>Y_OVERLAP:
                 bounding_boxes.append(combine_bounding_boxes(region_curr.bbox,region_next.bbox))
@@ -79,20 +79,12 @@ def get_line_bounding_boxes(Im):
                 bounding_boxes.append(region_curr.bbox)
     return bounding_boxes
 
-#Determines the % of overlap between A & B, with reference to A
-#That is, if 75% of A overlaps with B, the value will be 0.75.
-def overlap(boxA,boxB,H=True):
-    size = 0
-    if H:
-        diffOne = boxB[3]-boxA[1]
-        diffTwo = boxA[3]-boxB[1]
-        size = boxA[3]-boxA[1]
-    else:
-        diffOne = boxB[0]-boxA[2]
-        diffTwo = boxA[0]-boxB[2]
-        size = boxA[0]-boxA[2]
-    if diffOne>diffTwo: return diffTwo/size
-    else: return diffOne/size
+def get_boxes_list(regions):
+    boxes = []
+    for i in range(len(regions)):
+        boxes.append(regions[i].bbox)
+    return boxes
+
 
 #Combine two small bounding boxes into a big one
 def combine_bounding_boxes(A,B):
@@ -151,16 +143,30 @@ def fill_groups(groups,boxes):
         elif curr != last and last == 0:
             one_group.append(box)
         elif curr != last and last != 0 and curr != 0:
-            all_groups.append(one_group.copy())
+            all_groups.append((last,one_group.copy()))
             one_group.clear()
             one_group.append(box)
         elif curr != last and curr == 0:
-            all_groups.append(one_group.copy())
+            all_groups.append((last,one_group.copy()))
             one_group.clear()
         last = curr
     if last != 0:
-        all_groups.append(one_group.copy())
+        all_groups.append((last,one_group.copy()))
     return all_groups
+
+#Determines the % of overlap between A & B, with reference to A
+#That is, if 75% of A overlaps with B, the value will be 0.75.
+def overlap(boxA,boxB,H=True):
+    size = 0
+    if H:
+        diffOne = boxB[3]-boxA[1]
+        diffTwo = boxA[3]-boxB[1]
+        size = boxA[3]-boxA[1]
+    else:
+        diffOne = boxB[2]-boxA[0]
+        diffTwo = boxA[2]-boxB[0]
+        size = boxA[2]-boxA[0]
+    return max(0,min(diffOne,diffTwo)/size)
 
 def symmetric_overlap(boxA,boxB,H=True):
     K = overlap(boxA,boxB,H)
@@ -175,7 +181,7 @@ def classifyGroup(group):
         #if there is substantial vertical overlap between the first symbol and the others, SQRT
         first_sym = group[0]
         overlapping = True
-        for i in range(1,len(group)):
+        for i in range(1,len(group),1):
             if not symmetric_overlap(first_sym,group[i],H=False) > Y_OVERLAP:
                 overlapping = False
         if overlapping: return Group.SQRT
@@ -216,7 +222,6 @@ def get_supersubscript_labling(boxes):
     labels = []
     for i in range(len(boxes)):
         curr_y = (boxes[i][0] + boxes[i][2] / 2)
-        print(curr_y)
         if abs(starting_y - curr_y) > tolerance and curr_y > starting_y:
             labels.append("Super")
         elif abs(starting_y - curr_y) > tolerance and curr_y < starting_y:
@@ -225,19 +230,30 @@ def get_supersubscript_labling(boxes):
             labels.append("Normal")
     return labels
 
+def combine():
+    return 0
+
+def resolveGroups(groups,groups_indices,boxes,components):
+    for index,group in groups:
+        label = classifyGroup(group)
+        if label == Group.COMB:
+           group_box = np.where(groups_indices==index)
+
+    return 0
+
+frame = namedtuple('frame','image label')
 
 def main():
-    line_num = 9
-    test = io.imread('toby_2.png')
+    line_num = 0
+    test = io.imread('Test_Data2.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
     #io.imshow(lines[line_num],cmap='gray'); io.show()
-    boxes = get_line_bounding_boxes(lines[line_num])
-    groups = create_groups(boxes)
-    groups = fill_groups(groups,boxes)
-    print(groups)
-    for group in groups:
-        print(classifyGroup(group))
+    components = get_components(lines[line_num])
+    boxes = get_boxes_list(components)
+    groups_indices = create_groups(boxes)
+    groups = fill_groups(groups_indices,boxes)
+    resolveGroups(groups,groups_indices)
     '''labels = get_supersubscript_labling(boxes)
     counter = 0
     for box in boxes:
