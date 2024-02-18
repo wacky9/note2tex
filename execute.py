@@ -4,6 +4,8 @@ import skimage
 from skimage import io
 import numpy as np
 import sys
+import csv
+import latex_conv
 
 def main(image_path):
     IMAGE = io.imread(image_path)
@@ -11,6 +13,8 @@ def main(image_path):
 
     labels = sorted(get_label_list())
     preds = []
+    
+
     for line in frames:
         pred_line = []
         for frame in line:
@@ -19,8 +23,13 @@ def main(image_path):
             pred_line.append(predicted_label)
         preds.append(pred_line.copy())
         pred_line.clear()
-    
-    print(preds)
+
+    preds = list(filter(None, preds))
+
+    with open('intermediate.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(preds)
+    latex_conv.performLatexGen()
 
 if __name__ == '__main__':
     main(sys.argv[1])

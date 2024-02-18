@@ -51,15 +51,16 @@ tokenMapping = {
 }
 
 def writeFileHeader(latexFile, titleName, authorName):
+    
     print("\\documentclass{article}", file=latexFile)
     print("\\usepackage[utf8]{inputenc}", file=latexFile)
     print("\\usepackage[english]{babel}", file=latexFile)
-    print("\\usepackage{enumitem}", file=latexFile)
-    print("\\usepackage{amsmath}", file=latexFile)
-    print("\\usepackage{graphicx}", file=latexFile)
-    print("\\usepackage[]{amsthm}", file=latexFile)
-    print("\\usepackage[]{amssymb}\n", file=latexFile)
-    print("\\theoremstyle{remark}\n", file=latexFile)
+    #print("\\usepackage{enumitem}", file=latexFile)
+    #print("\\usepackage{amsmath}", file=latexFile)
+    #print("\\usepackage{graphicx}", file=latexFile)
+    #print("\\usepackage[]{amsthm}", file=latexFile)
+    #print("\\usepackage[]{amssymb}\n", file=latexFile)
+    #print("\\theoremstyle{remark}\n", file=latexFile)
     print("\\title{" + titleName + "}", file=latexFile)
     print("\\author{" + authorName + "}", file=latexFile)
     print("\\date\\today\n", file=latexFile)
@@ -84,8 +85,9 @@ def generateLatexPdf():
     
     #Generate the pdf
     execution_string = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "c:/Users/User/Desktop/hack-ai-2024/latex.tex"'
-    execution_string_local = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "./latex.tex"'
-    os.system(execution_string_local)
+    execution_string_local = 'pdflatex  --max-print-line=10000-synctex=1 -interaction=nonstopmode -file-line-error -recorder  "./latex.tex"'
+    str_3 = 'pdflatex  --max-print-line=10000 -synctex=1 -interaction=nonstopmode -file-line-error -recorder  "./latex.tex"'
+    os.system(str_3)
 
 
 def performLatexGen():
@@ -110,6 +112,7 @@ def performLatexGen():
 
     #Output the latex footer
     writeFileFooter(latexFile)
+    latexFile.close()
 
     #Generate the latex pdf
     generateLatexPdf()

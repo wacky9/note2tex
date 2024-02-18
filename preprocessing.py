@@ -291,7 +291,7 @@ def preprocess(Image):
             for box in boxes:
                 Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
                 line.append(Im)
-            frames.append[line.copy()]
+            frames.append(line.copy())
             line.clear()
         return frames
     else:
