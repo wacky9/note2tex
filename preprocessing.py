@@ -3,6 +3,7 @@ from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import filters
+from enum import Enum
 import cv2
 
 #Determines how to binarize data
@@ -11,6 +12,12 @@ THRESHOLD = 0.95
 TOLERANCE = 0.05
 SIZE = (32,32)
 Y_OVERLAP = 0.6
+
+class Group(Enum):
+    FRAC = 1
+    SQRT=2
+    COMB=3
+
 #Potential problem: need to detect if image is [0,1] or [0,255]
 def binarize(Im):
     grayIm = skimage.color.rgb2gray(Im[:,:,0:3])
@@ -52,7 +59,6 @@ def get_line_bounding_boxes(Im):
     regions.sort(key=lambda x: x.centroid[1], reverse=False)
 
     #Get all the bounding boxes
-    x_threshold = 10
     bounding_boxes = []
     skip_current=False
     for i in range(0,len(regions)):
@@ -71,24 +77,116 @@ def get_line_bounding_boxes(Im):
                 skip_current=True
             else:
                 bounding_boxes.append(region_curr.bbox)
-                #io.imshow(region.image, cmap='gray'); io.show()
     return bounding_boxes
 
 #Determines the % of overlap between A & B, with reference to A
 #That is, if 75% of A overlaps with B, the value will be 0.75.
-def overlap(boxA,boxB):
-    diffOne = boxB[3]-boxA[1]
-    diffTwo = boxA[3]-boxB[1]
-    if diffOne>diffTwo: return diffTwo/(boxA[3]-boxA[1])
-    else: return diffOne/(boxA[3]-boxA[1])
+def overlap(boxA,boxB,H=True):
+    size = 0
+    if H:
+        diffOne = boxB[3]-boxA[1]
+        diffTwo = boxA[3]-boxB[1]
+        size = boxA[3]-boxA[1]
+    else:
+        diffOne = boxB[0]-boxA[2]
+        diffTwo = boxA[0]-boxB[2]
+        size = boxA[0]-boxA[2]
+    if diffOne>diffTwo: return diffTwo/size
+    else: return diffOne/size
 
+#Combine two small bounding boxes into a big one
 def combine_bounding_boxes(A,B):
     minrow_1, mincol_1, maxrow_1, maxcol_1 = A
     minrow_2, mincol_2, maxrow_2, maxcol_2 = B
     return ((min(minrow_1, minrow_2),
              min(mincol_1, mincol_2),
              max(maxrow_1, maxrow_2),
-             max(maxcol_1, maxcol_2)))
+             max(maxcol_1, maxcol_2)))    
+
+def create_groups(boxes):
+    length = len(boxes)
+    grouped = np.zeros((length,1))
+    group_index = 1
+    for i in range(length):
+        if grouped[i] != 0:
+            continue
+        #box should expand as it encounters overlapping objects
+        center_box = boxes[i]
+        #expand left until stopping
+        left = i-1
+        end = False
+        while not left<0 and grouped[left]==0 and not end:
+           if symmetric_overlap(center_box,boxes[left]) > Y_OVERLAP: 
+               grouped[left] = group_index
+               grouped[i] = group_index
+               center_box = combine_bounding_boxes(center_box,boxes[left])
+               left -= 1
+           else:
+               end = True
+
+        #expand right until stopping
+        right = i+1
+        end = False
+        while not right>=length and grouped[right]== 0 and not end:
+            if symmetric_overlap(center_box,boxes[right]) > Y_OVERLAP: 
+               grouped[right] = group_index
+               grouped[i] = group_index 
+               center_box = combine_bounding_boxes(center_box,boxes[right])
+               right += 1
+            else:
+               end = True
+        group_index += 1
+    return grouped
+
+#Create a list of a list of tuples that represents groups
+def fill_groups(groups,boxes):
+    all_groups = []
+    last = 0
+    one_group = []
+    for i in range(len(groups)):
+        curr = groups[i]
+        box = boxes[i]
+        if curr == last and last != 0:
+            one_group.append(box)
+        elif curr != last and last == 0:
+            one_group.append(box)
+        elif curr != last and last != 0 and curr != 0:
+            all_groups.append(one_group.copy())
+            one_group.clear()
+            one_group.append(box)
+        elif curr != last and curr == 0:
+            all_groups.append(one_group.copy())
+            one_group.clear()
+        last = curr
+    if last != 0:
+        all_groups.append(one_group.copy())
+    return all_groups
+
+def symmetric_overlap(boxA,boxB,H=True):
+    K = overlap(boxA,boxB,H)
+    L = overlap(boxB,boxA,H)
+    return max((K,L))
+
+
+def classifyGroup(group):
+    #case: group_size = 2 -> sqrt, =, i/j
+    if len(group) == 2: return two_case(group)
+    else:
+        #if there is substantial vertical overlap between the first symbol and the others, SQRT
+        first_sym = group[0]
+        overlapping = True
+        for i in range(1,len(group)):
+            if not symmetric_overlap(first_sym,group[i],H=False) > Y_OVERLAP:
+                overlapping = False
+        if overlapping: return Group.SQRT
+    return Group.FRAC
+
+def two_case(group):
+    if symmetric_overlap(group[0],group[1],H=False)>Y_OVERLAP:
+        return Group.SQRT
+    else: 
+        return Group.COMB
+
 #standardizes each image to a certain size and color scheme
 def standardize(Im,size):
     Im = expand(Im,size)
@@ -129,20 +227,25 @@ def get_supersubscript_labling(boxes):
 
 
 def main():
-    line_num = 0
+    line_num = 9
     test = io.imread('toby_2.png')
     bin = binarize(test)>THRESHOLD
     lines = segment_lines(bin)
-    io.imshow(lines[line_num],cmap='gray'); io.show()
+    #io.imshow(lines[line_num],cmap='gray'); io.show()
     boxes = get_line_bounding_boxes(lines[line_num])
-    labels = get_supersubscript_labling(boxes)
+    groups = create_groups(boxes)
+    groups = fill_groups(groups,boxes)
+    print(groups)
+    for group in groups:
+        print(classifyGroup(group))
+    '''labels = get_supersubscript_labling(boxes)
     counter = 0
     for box in boxes:
         print(box)
         print(labels[counter])
         Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
         io.imshow(Im); io.show()
-        counter += 1
+        counter += 1'''
     return 0
 
 
