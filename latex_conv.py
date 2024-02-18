@@ -47,7 +47,12 @@ tokenMapping = {
   "\\forall": "\\forall ",
   "\exists": "\\exists ",
   "\infty": "\\infty",
-  "\\to": "\\to"
+  "\\to": "\\to",
+
+  "\\asterisk": "*",
+  "\colon": ":",
+  "\doublequotes": "\"",
+  "\singlequote": "\'",
 }
 
 def writeFileHeader(latexFile, titleName, authorName):
