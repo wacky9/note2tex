@@ -14,6 +14,7 @@ THRESHOLD = 0.95
 TOLERANCE = 0.05
 SIZE = (32,32)
 Y_OVERLAP = 0.6
+MODE = 'TRAIN'
 
 class Group(Enum):
     FRAC = 1
@@ -206,13 +207,13 @@ def expand(Im,size):
     rowdiff = Im.shape[0]-size[0]
     if rowdiff<0:
         top = -rowdiff//2
-        bottom = -rowdiff//2-rowdiff%2
+        bottom = -rowdiff//2+rowdiff%2
         Im = np.pad(Im,pad_width=((top,bottom),(0,0)),mode='constant',constant_values=1)
     #column expand
     coldiff = Im.shape[1]-size[1]
     if coldiff<0:
         left = -coldiff//2
-        right = -coldiff//2-coldiff%2
+        right = -coldiff//2+coldiff%2
         Im = np.pad(Im,pad_width=((0,0),(left,right)),mode='constant',constant_values=1)
     return Im
 
@@ -230,39 +231,99 @@ def get_supersubscript_labling(boxes):
             labels.append("Normal")
     return labels
 
-def combine():
-    return 0
 
-def resolveGroups(groups,groups_indices,boxes,components):
+def getIm(box,line):
+    return standardize(line[box[0]:box[2],box[1]:box[3]],SIZE)
+
+
+def resolveGroups(groups,groups_indices,boxes,components,line):
+    images = []
     for index,group in groups:
         label = classifyGroup(group)
+        group_box = np.where(groups_indices==index)[0]
         if label == Group.COMB:
-           group_box = np.where(groups_indices==index)
+           big_box = combine_bounding_boxes(boxes[group_box[0]],boxes[group_box[1]])
+           im = getIm(big_box,line)
+           images.append(frame(im,"NONE"))
 
-    return 0
+        if label == Group.SQRT:
+            sqrt_box = boxes[group_box[0]]
+            sqrt_image = 0
+            #set 1-image to flip values
+            for i in components:
+                if sqrt_box == i.bbox: sqrt_image = 1-i.image
+            images.append(frame(sqrt_image,"SQRT"))
+            for k in range(1,len(group_box)):
+                im = getIm(boxes[group_box[k]],line)
+                images.append(frame(im,"SQRT"))
+
+        if label == Group.FRAC:
+            print("cry")
+    return images
 
 frame = namedtuple('frame','image label')
 
 def main():
-    line_num = 0
-    test = io.imread('Test_Data2.png')
-    bin = binarize(test)>THRESHOLD
-    lines = segment_lines(bin)
-    #io.imshow(lines[line_num],cmap='gray'); io.show()
-    components = get_components(lines[line_num])
-    boxes = get_boxes_list(components)
-    groups_indices = create_groups(boxes)
-    groups = fill_groups(groups_indices,boxes)
-    resolveGroups(groups,groups_indices)
-    '''labels = get_supersubscript_labling(boxes)
-    counter = 0
-    for box in boxes:
-        print(box)
-        print(labels[counter])
-        Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
-        io.imshow(Im); io.show()
-        counter += 1'''
-    return 0
+    if MODE == 'COMPLICATED':
+        line_num = 0
+        test = io.imread('Test_Data2.png')
+        bin = binarize(test)>THRESHOLD
+        lines = segment_lines(bin)
+        #io.imshow(lines[line_num],cmap='gray'); io.show()
+        components = get_components(lines[line_num])
+        boxes = get_boxes_list(components)
+        groups_indices = create_groups(boxes)
+        groups_indices = groups_indices[:,0]
+        groups = fill_groups(groups_indices,boxes)
+        frames = resolveGroups(groups,groups_indices,boxes,components,lines[line_num])
+        for F in frames:
+            print(F.label)
+            io.imshow(F.image,cmap='gray'); io.show()
+    elif MODE == 'TEST':
+        IM = io.imread('White_Data.png')
+        bin = binarize(IM)>THRESHOLD
+        io.imshow(bin); io.show()
+        lines = segment_lines(bin)
+        io.imshow(lines[7]); io.show()
+        num = 0
+        for line_num in range(len(lines)):
+            if line_num != 7: continue
+            components = get_components(lines[line_num])
+            boxes = get_line_bounding_boxes(components)
+            path = 'test'  
+            for box in boxes:
+                Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
+                io.imshow(Im,cmap='gray'); io.show()
+                #io.imsave(path+'/'+ str(num)+'.png',Im,check_contrast=False)
+                num+=1
+    else:
+        import os
+        train_0 = ['W','w','X','x','Y','y','Z','z','0','1','2',
+                '3','4','5','6','7','8','9','+','-','(',')']
+        train_1 = ['L','l','M','m','N','n','O','o','P','p','Q',
+                   'q','R','r','S','s','T','t','U','u','V','v']
+        train_2 = ['dot','slash','less','greater','lessequal','greaterequal','=',
+                   '≠',',','rarrow','larrow','biarrow',
+                   'subset','real','integers','natural',
+                   'rational','complex','pi','epsilon','theta','forall']
+        train_3 = ['A','a','B','b','C','c','D','d','E','e',
+                   'F','f','G','g','H','h','I','i','J','j',
+                   'K','k']
+        train_4 = ['exists','arrow2']
+        IM = io.imread('toby_train1.png')
+        bin = binarize(IM)>THRESHOLD
+        lines = segment_lines(bin)
+        line_num = 0
+        for name in train_2:
+            num = 0
+            if not os.path.isdir(name):
+                os.mkdir(name)
+            components = get_components(lines[line_num])
+            boxes = get_line_bounding_boxes(components)
+            for box in boxes:
+                Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
+                io.imsave(name+'/'+ str(num)+'.png',Im,check_contrast=False)
+                num+=1
 
 
 if __name__=="__main__": 
