@@ -61,7 +61,9 @@ def init_cnn_from_files():
 # inference on frame with tf ensemble.
 # returns label and confidence.
 def predict_ensemble_label(frame, ensemble, labels):
-    frame = np.array(frame)
+    print('range of frame is ',np.max(frame),np.min(frame))
+    frame = np.array(frame)/255.0
+    print('NEW range of frame is ',np.max(frame),np.min(frame))
     results=[0 for _ in range(len(ensemble))]
     frame = frame.reshape((1, 32, 32, 1))
     ans=[0 for _ in range(len(ensemble))]
@@ -70,8 +72,8 @@ def predict_ensemble_label(frame, ensemble, labels):
         results[i] = mod.predict(frame)
         print(f'mod.predict(frame) is {results[i].shape}')
         print(f'mod.predict(frame) is {results[i]}')
-        print('found argmax to be ',np.argmax(results[i], axis = 2))
-        ans[i] = np.argmax(results[i], axis = 2)
+        print('found argmax to be ',np.argmax(results[i], axis = 1))
+        ans[i] = np.argmax(results[i], axis = 1)
     ans = np.array(ans)
     print(ans)
     # ans=ans.flatten()

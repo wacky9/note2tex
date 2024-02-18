@@ -1,12 +1,11 @@
 import os
 import datetime
 import numpy as np
+from skimage import io
 import torch
 import torch.nn as nn
 
-import os
-import datetime
-import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -15,7 +14,6 @@ from torch.utils.data.dataloader import default_collate
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from torchvision import transforms
-
 
 from sklearn.model_selection import train_test_split
 
@@ -28,6 +26,46 @@ from keras.datasets import mnist
 
 NUM_LABELS = 70     # number of unique classes
 NUM_CNNS=3      # count of CNNs in the ensemble
+
+# read all imgs in dir.
+def images_to_numpy_array(folder_path):
+    image_arrays = []
+    labels = []
+
+    # Iterate through each folder (assuming each folder represents a label)
+    for label in os.listdir(folder_path):
+        label_path = os.path.join(folder_path, label)
+        if not os.path.isdir(label_path):
+            continue
+
+        # Read images from each folder
+        for filename in os.listdir(label_path):
+            image_path = os.path.join(label_path, filename)
+            if os.path.isfile(image_path) and filename.endswith(('.png')):
+                # Open image using scikit-image
+                image = io.imread(image_path, as_gray=True)
+
+                # Convert image to numpy array
+                image_array = np.array(image)
+
+                # Check if image values are in the range of 0-255
+                if np.max(image_array) > 1.0:
+                    # Normalize image values to the range of 0-1
+                    image_array = image_array / 255.0
+                            
+
+                # Append to list
+                image_arrays.append(image_array)
+                labels.append(label.replace('_', ''))
+                # print(f'Image label: {label.replace("_", "")}, image_file: {image_path}')
+
+    # Convert lists to numpy arrays
+    image_arrays = np.array(image_arrays)
+    labels = np.array(labels)
+
+    return image_arrays, labels
+
+
 
 # Define the neural network model
 class Net(nn.Module):
