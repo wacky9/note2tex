@@ -4,15 +4,17 @@ import os
 tokenMapping = {
   "\plus": "+",
   "\minus": "-",
-  "\\times": "\\cdot ",
+  "\\times": "\\cdot",
   "\divide": "/",
 
   "\equals": "=",
-  "\leq": "\\leq ",
-  "\geq": "\\geq ",
-  "\\notEqual": "\\neq ",
+  "\leq": "\\leq",
+  "\geq": "\\geq",
+  "\\notEqual": "\\neq",
 
-  "!": "!",
+  "\<": "<",
+  "\>": ">",
+  "\|": "|",
 
   "\\startsqrt": "\sqrt{",
   "\\endsqrt": "}",
@@ -40,12 +42,12 @@ tokenMapping = {
 
   "\pi": "\\pi ",
   "\epsilon": "\\epsilon ",
-  "\delta": "\\delta ",
+  "\\theta": "\\theta",
 
   "\\forall": "\\forall ",
   "\exists": "\\exists ",
-
-
+  "\infty": "\\infty",
+  "\\to": "\\to"
 }
 
 def writeFileHeader(latexFile, titleName, authorName):
