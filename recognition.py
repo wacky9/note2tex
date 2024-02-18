@@ -6,13 +6,17 @@ from skimage import io
 
 from myutils import *
 
+
 # Function to predict label from a frame
 def predict_label(frame, model, labels):
     # Move the frame to the appropriate device
     # frame = frame.to(device)
     # Define image preprocessing
+
+    frame = frame/max(frame)
+
     preprocess = transforms.Compose([
-        transforms.Resize((32,32)),  # Resize to match model input size
+        #transforms.Resize((32,32)),  # Resize to match model input size
         transforms.ToTensor(),         # Convert to tensor
     ])
     frame = preprocess(Image.fromarray(frame))
