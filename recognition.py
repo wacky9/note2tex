@@ -31,9 +31,9 @@ def predict_label(frame, model, labels):
     
     return ans, confidence
 
-def get_label_list():
+def get_label_list(filepath='data/labels.list'):
     li=[]
-    with open('data/labels.list') as f:
+    with open(filepath) as f:
         li=eval(f.read().strip())
     return sorted(li)
 
