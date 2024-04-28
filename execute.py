@@ -27,7 +27,7 @@ def main(image_path):
 
     preds = list(filter(None, preds))
 
-    with open('intermediate.csv', 'w', newline='') as f:
+    with open('support\intermediate.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(preds)
     performLatexGen()
