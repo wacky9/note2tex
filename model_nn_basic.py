@@ -6,6 +6,7 @@ from torch import functional as F
 internal = 128
 
 class NN(nn.Module):
+    # classes = # of classses. size = number of img pixels
     def __init__(self,classes,size):
         self.input = nn.Linear(size,128)
         self.internal = nn.Linear(128,128)
