@@ -4,11 +4,14 @@ from torchvision import transforms
 from PIL import Image
 import os
 
+PATH = 'dataset2'
+
 class CustomDataset(Dataset):
     def __init__(self, root_dir, transform=None):
         self.root_dir = root_dir
         self.transform = transform
-        self.classes = os.listdir(root_dir)
+        self.classes = [file for file in os.listdir(root_dir) if not file.startswith('.')]
+        print(self.classes)
         self.class_to_idx = {cls_name: i for i, cls_name in enumerate(self.classes)}
         self.images = self._make_dataset()
 
@@ -37,8 +40,8 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
-dataset = CustomDataset('path_to_dataset_root', transform=transform)
+dataset = CustomDataset(PATH, transform=transform)
 
 # Accessing an image and its label
-image, label = dataset[0]
+image, label = dataset[100]
 print(image.shape, label)
