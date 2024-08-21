@@ -1,6 +1,8 @@
 import torch
 from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
 from torchvision import transforms
+import matplotlib.pyplot as plt
 from PIL import Image
 import os
 
@@ -11,7 +13,6 @@ class CustomDataset(Dataset):
         self.root_dir = root_dir
         self.transform = transform
         self.classes = [file for file in os.listdir(root_dir) if not file.startswith('.')]
-        print(self.classes)
         self.class_to_idx = {cls_name: i for i, cls_name in enumerate(self.classes)}
         self.images = self._make_dataset()
 
@@ -20,7 +21,8 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path, target = self.images[idx]
-        image = Image.open(img_path).convert("RGB")
+        # Open image and convert to grayscale
+        image = Image.open(img_path).convert("L")
         if self.transform:
             image = self.transform(image)
         return image, target
@@ -40,8 +42,21 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
+
+# Test Code Below
 dataset = CustomDataset(PATH, transform=transform)
 
 # Accessing an image and its label
 image, label = dataset[100]
 print(image.shape, label)
+
+train_dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+# Display image and label.
+train_features, train_labels = next(iter(train_dataloader))
+print(f"Feature batch shape: {train_features.size()}")
+print(f"Labels batch shape: {train_labels.size()}")
+img = train_features[0].squeeze()
+label = train_labels[0]
+plt.imshow(img)
+plt.show()
+print(f"Label: {label}")
