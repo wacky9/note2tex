@@ -43,7 +43,7 @@ transform = transforms.Compose([
 ])
 
 
-# Test Code Below
+""" # Test Code Below
 dataset = CustomDataset(PATH, transform=transform)
 
 # Accessing an image and its label
@@ -59,4 +59,4 @@ img = train_features[0].squeeze()
 label = train_labels[0]
 plt.imshow(img)
 plt.show()
-print(f"Label: {label}")
+print(f"Label: {label}") """
