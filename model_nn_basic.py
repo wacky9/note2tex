@@ -3,17 +3,17 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-internal = 128
+INTERNAL = 128
 
 class NN(nn.Module):
     # classes = # of classses. size = number of img pixels
 
     def __init__(self,classes,size):
         super().__init__()
-        self.input = nn.Linear(size,128)
-        self.internal = nn.Linear(128,128)
+        self.input = nn.Linear(size,INTERNAL)
+        self.internal = nn.Linear(INTERNAL,INTERNAL)
         self.dropout = nn.Dropout1d()
-        self.out = nn.Linear(128,classes)
+        self.out = nn.Linear(INTERNAL,classes)
         self.soft = nn.Softmax(dim=1)
     
     def forward(self,x):
