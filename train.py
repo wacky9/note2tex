@@ -7,10 +7,11 @@ from torchvision import transforms
 from torchvision.transforms import v2
 from skimage import io
 from data import CustomDataset
+from data import SmallDataset
 from model_nn_basic import NN
-criterion = nn.MSELoss()
+criterion = nn.CrossEntropyLoss()
 LR = 0.01
-BATCH = 16
+BATCH = 4
 EPOCH = 500
 PATH = 'dataset2'
 SIZE = 32
@@ -21,18 +22,26 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Note to self: transforms are applied to each image every single batch. Dataset is the same size but each epoch it sees different data
 # Augmentations: rotation, blur, resizing... others?
 # Do I need larger images to safely do some of these transforms?
-TRANSFORM = v2.Compose([
+AUGMENT_TRANSFORM = v2.Compose([
     v2.PILToTensor(),
     v2.ToDtype(torch.float32),
     v2.RandomRotation(degrees=[-15,15]),
     v2.GaussianNoise(),
     v2.GaussianBlur(3,(0.1,1.0)),
+    #Just arbitrary values to get the data between [-1,1]
+    v2.Normalize(0.5,1)
+])
+
+PLAIN_TRANSFORM = v2.Compose([
+    v2.PILToTensor(),
+    v2.ToDtype(torch.float32)
 ])
 
 def full_train(data, model):
     #test-train split
     train_data,test_data,validate_data = torch.utils.data.random_split(data,[0.8,0.1,0.1])
     train = DataLoader(train_data,batch_size = BATCH)
+    normalize(train)
     test = DataLoader(test_data)    
     validate = DataLoader(validate_data,batch_size = BATCH)    
     optimizer = optim.Adam(model.parameters(),lr=LR)
@@ -57,6 +66,26 @@ def full_train(data, model):
     print(correct_classes)
     return 0
 
+# Subtract mean from data to center it at 0
+def normalize(loader):
+    mean= get_mean(loader)
+
+
+
+def get_mean(loader):
+    # Compute the mean and standard deviation of all pixels in the dataset
+    num_pixels = 0
+    mean = 0.0
+    std = 0.0
+    for images, _ in loader:
+        batch_size, num_channels, height, width = images.shape
+        num_pixels += batch_size * height * width
+        mean += images.mean(axis=(0, 2, 3)).sum()
+
+    mean /= num_pixels
+
+    return mean
+
 # train a single mini-batch of data
 def batch(data,labels,model,optimizer):
     optimizer.zero_grad()
@@ -66,12 +95,18 @@ def batch(data,labels,model,optimizer):
     loss = criterion(preds,labels)
     loss.backward()
     optimizer.step()
+    return loss.item()
     #print(loss.item())
 
 
 def main():
     global class_num
-    dataset = CustomDataset(PATH, transform=TRANSFORM)
+    #dataset = CustomDataset(PATH, transform=TRANSFORM)
+
+    #dataset = SmallDataset(PATH,file_list = set(['arrow2','dot','epsilon','less','greater','lowerg','upperA','rational','three','lparen']),transform=TRANSFORM)
+    
+    #Extreme overfit test
+    dataset = SmallDataset(PATH,file_list = set(['upperH']),transform=AUGMENT_TRANSFORM)
     class_num = len(dataset.classes)
     net = NN(class_num,SIZE*SIZE)
     full_train(dataset,net)
