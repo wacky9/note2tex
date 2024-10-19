@@ -1,10 +1,8 @@
-import os
 import torch
 from torch import nn
 import torch.nn.functional as F
 
 INTERNAL = 128
-
 class NN(nn.Module):
     # classes = # of classses. size = number of img pixels
 
