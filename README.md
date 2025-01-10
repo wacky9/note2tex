@@ -5,6 +5,7 @@ note2tex is a streamlined handwritten notes to LaTeX converter designed to save 
 The program reads in handwritten math notes and outputs LaTeX code with a corresponding generated pdf
 
 Research Papers consulted:
+
 https://arxiv.org/html/2404.10690v1#A4
 
 https://arxiv.org/abs/2105.11307
