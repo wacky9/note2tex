@@ -6,5 +6,6 @@ The program reads in handwritten math notes and outputs LaTeX code with a corres
 
 Research Papers consulted:
 https://arxiv.org/html/2404.10690v1#A4
+
 https://arxiv.org/abs/2105.11307
 
