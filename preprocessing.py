@@ -23,6 +23,8 @@ class Group(Enum):
 #Potential problem: need to detect if image is [0,1] or [0,255]
 def binarize(Im):
     grayIm = skimage.color.rgb2gray(Im[:,:,0:3])
+    if np.max(grayIm)>1:
+        grayIm = grayIm/255
     return grayIm
 
 #Detects information about dividers
@@ -284,7 +286,7 @@ def preprocess(Image):
         bin = binarize(IM)>THRESHOLD
         lines = segment_lines(bin)
         #debugging step
-        TEST_LINE = 10
+        TEST_LINE = 0
         io.imsave('img_output/line_test.png',lines[TEST_LINE],check_contrast=False)
         frames = []
         for line_num in range(len(lines)):
