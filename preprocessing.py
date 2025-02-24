@@ -11,7 +11,7 @@ import cv2
 #Assumes images is between [0,1] and grayscale
 THRESHOLD = 0.95
 TOLERANCE = 0.05
-SIZE = (32,32)
+SIZE = (28,28)
 Y_OVERLAP = 0.6
 MODE = 'TEST'
 
@@ -271,18 +271,21 @@ def preprocess(Image):
         #io.imshow(lines[line_num],cmap='gray'); io.show()
         components = get_components(lines[line_num])
         boxes = get_boxes_list(components)
+        print(len(boxes))
         groups_indices = create_groups(boxes)
         groups_indices = groups_indices[:,0]
+        print(len(groups_indices))
         groups = fill_groups(groups_indices,boxes)
+        print(len(groups))
         frames = resolveGroups(groups,groups_indices,boxes,components,lines[line_num])
-        for F in frames:
-            print(F.label)
-            io.imshow(F.image,cmap='gray'); io.show()
-        return []
+        return frames
     elif MODE == 'TEST':
         IM = Image
         bin = binarize(IM)>THRESHOLD
         lines = segment_lines(bin)
+        #debugging step
+        TEST_LINE = 10
+        io.imsave('img_output/line_test.png',lines[TEST_LINE],check_contrast=False)
         frames = []
         for line_num in range(len(lines)):
             line = []
@@ -293,34 +296,7 @@ def preprocess(Image):
                 line.append(Im)
             frames.append(line.copy())
             line.clear()
+        #debugging step
+        for i in range(len(frames[TEST_LINE])):
+            io.imsave('img_output/frame' +str(i)+'.png',frames[TEST_LINE][i],check_contrast=False)
         return frames
-    else:
-        import os
-        train_0 = ['upperW','lowerw','upperX','lowerx','upperY','lowery','upperZ','lowerz','0','1','2',
-                '3','4','5','6','7','8','9','+','-','(',')']
-        train_1 = ['upperL','lowerl','upperM','lowerm','upperN','lowern','upperO','lowero','upperP','lowerp','upperQ',
-                   'lowerq','upperR','lowerr','upperS','lowers','upperT','lowert','upperU','loweru','upperV','lowerv']
-        train_2 = ['dot','slash','less','greater','lessequal','greaterequal','=',
-                   '≠',',','rarrow','larrow','biarrow',
-                   'subset','real','integers','natural',
-                   'rational','complex','pi','epsilon','theta','forall']
-        train_3 = ['upperA','lowera','upperB','lowerb','upperC','lowerc','upperD','lowerd','upperE','lowere',
-                   'upperF','lowerf','upperG','lowerg','upperH','lowerh','upperI','loweri','upperJ','lowerj',
-                   'upperK','lowerk']
-        train_4 = ['exists','arrow2']
-        IM = Image
-        bin = binarize(IM)>THRESHOLD
-        lines = segment_lines(bin)
-        line_num = 0
-        for name in train_4:
-            if not os.path.isdir(name):
-                os.mkdir(name)
-            components = get_components(lines[line_num])
-            boxes = get_line_bounding_boxes(components)
-            num = 0
-            for box in boxes:
-                Im = standardize(lines[line_num][box[0]:box[2],box[1]:box[3]],SIZE)
-                io.imsave(name+'/'+ str(num)+'.png',Im,check_contrast=False)
-                num+=1
-            line_num+=1
-        return []

@@ -12,7 +12,8 @@ class CNN(nn.Module):
         self.size = size
         super().__init__()
         #Should have a 6x6 img left over after applying convolutions and pooling
-        self.input = nn.Linear(2*FILTERS*6*6,INTERNAL)
+        #self.input = nn.Linear(2*FILTERS*6*6,INTERNAL)
+        self.input = nn.Linear(150,INTERNAL)
         self.internal = nn.Linear(INTERNAL,INTERNAL)
         # in_channels = 1 since grayscale
         # out_channels = FILTERS (number of different filters to use)

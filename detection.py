@@ -1,35 +1,43 @@
 # Handles the neural network aspect of the project
 from enum import Enum
 from model_nn_basic import NN
-from train import full_train
+from model_conv import CNN
+from train import full_train, create_dataset
 import torch
-import torch.nn as nn
-import torch.optim as optim
 
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model_path = 'model/basic_mnist.pth'
 class Model(Enum):
     neural = 1
     conv = 2
 
-def create_model(name, params):
-    model
-    device = (
-        "cuda"
-        if torch.cuda.is_available()
-        else "cpu"
-    )
-    if name == Model.neural:
-        classes,size = params
-        model = NN(classes,size).to(device)
-        LR = 0.01
-    return model
+def detect(model, frame):
+    pred = model(frame.to(device))
+    return torch.argmax(pred).item()
 
-def detect():
-    raise NotImplemented
+def training():
+    #MNIST dataset
+    dataset = create_dataset()
+    class_num = len(dataset.classes)
+    #img_size
+    SIZE = 28
+    net = CNN(class_num,SIZE*SIZE)
+    full_train(dataset,net,class_num)
+    #save trained model for inference
+    torch.save(net.state_dict(),model_path)
 
-def training(data,labels, params):
-    model = create_model(Model.neural,params)
-    full_train(data,labels,model)
+def load_model():
+    dataset = create_dataset()
+    class_num = len(dataset.classes)
+    #img_size
+    SIZE = 28
+    model = CNN(class_num,SIZE*SIZE)
+    model.load_state_dict(torch.load(model_path,weights_only=True))
+    model.eval()
+    return model.to(device)
 
 def benchmark():
     raise NotImplemented
+
+if __name__ == '__main__':
+    training()

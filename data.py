@@ -5,7 +5,7 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 from PIL import Image
 import os
-
+#Note: this no longer works
 PATH = 'dataset2'
 
 class CustomDataset(Dataset):
@@ -68,22 +68,3 @@ transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
 ])
-
-
-""" # Test Code Below
-dataset = CustomDataset(PATH, transform=transform)
-
-# Accessing an image and its label
-image, label = dataset[100]
-print(image.shape, label)
-
-train_dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
-# Display image and label.
-train_features, train_labels = next(iter(train_dataloader))
-print(f"Feature batch shape: {train_features.size()}")
-print(f"Labels batch shape: {train_labels.size()}")
-img = train_features[0].squeeze()
-label = train_labels[0]
-plt.imshow(img)
-plt.show()
-print(f"Label: {label}") """

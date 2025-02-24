@@ -99,7 +99,7 @@ def performLatexGen():
     
     #Open the generated latex file and the intermediate csv file.
     latexFile = open("latex.tex", "w")
-    intermediateFile = open("intermediate.csv", "r")
+    intermediateFile = open("support/intermediate.csv", "r")
 
     #Output the latex header
     writeFileHeader(latexFile, "Test", "Me")
@@ -119,6 +119,6 @@ def performLatexGen():
     writeFileFooter(latexFile)
     latexFile.close()
 
-    #Generate the latex pdf
-    generateLatexPdf()
+    #Generate the latex pdf (don't have LaTeX installed in WSL env)
+    #generateLatexPdf()
     
