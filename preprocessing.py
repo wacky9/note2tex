@@ -286,7 +286,7 @@ def preprocess(Image):
         bin = binarize(IM)>THRESHOLD
         lines = segment_lines(bin)
         #debugging step
-        TEST_LINE = 0
+        TEST_LINE = 1
         io.imsave('img_output/line_test.png',lines[TEST_LINE],check_contrast=False)
         frames = []
         for line_num in range(len(lines)):

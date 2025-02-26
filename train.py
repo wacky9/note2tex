@@ -32,8 +32,8 @@ AUGMENT_TRANSFORM = v2.Compose([
     v2.RandomRotation(degrees=[-15,15]),
     v2.GaussianNoise(),
     v2.GaussianBlur(3,(0.1,1.0)),
-    #Just arbitrary values to get the data between [-1,1]
-    v2.Normalize([0.5],[1])
+    #Just arbitrary values to get the data between [-1,1]. Not sure about this: may be harmful
+    v2.Normalize([0.1307],[0.3081])
 ])
 
 PLAIN_TRANSFORM = v2.Compose([

@@ -63,6 +63,7 @@ class SmallDataset(Dataset):
             for file_name in os.listdir(class_dir):
                 images.append((os.path.join(class_dir, file_name), class_idx))
         return images
+
 # Example usage
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
