@@ -3,8 +3,10 @@ from torch import nn
 import torch.nn.functional as F
 
 INTERNAL = 128
-FILTERS = 3
-
+FILTERS = 9
+IN_CHANNEL_1 = 1
+KERNEL_SIZE = 3
+POOL = 2
 class CNN(nn.Module):
     # classes = # of classses. size = number of img pixels
 
@@ -13,18 +15,24 @@ class CNN(nn.Module):
         super().__init__()
         #Should have a 6x6 img left over after applying convolutions and pooling
         #self.input = nn.Linear(2*FILTERS*6*6,INTERNAL)
-        self.input = nn.Linear(150,INTERNAL)
+        #dimensions of a single filter
+        filter_1 = compute_output_size((28,28),(KERNEL_SIZE,KERNEL_SIZE),operation="conv")
+        filter_2 = compute_output_size(filter_1,(KERNEL_SIZE,KERNEL_SIZE),operation="conv")
+        filter_3 = compute_output_size(filter_2,(POOL,POOL),stride=POOL,operation="pool")
+        #dimension of a single filter times number of filters
+        input_size = filter_3[0] * filter_3[1] * 2 * FILTERS
+        self.input = nn.Linear(input_size,INTERNAL)
         self.internal = nn.Linear(INTERNAL,INTERNAL)
         # in_channels = 1 since grayscale
         # out_channels = FILTERS (number of different filters to use)
-        self.conv1 = nn.Conv2d(1,FILTERS,3)
-        self.conv2 = nn.Conv2d(3,2*FILTERS,3)
+        self.conv1 = nn.Conv2d(IN_CHANNEL_1,FILTERS,KERNEL_SIZE)
+        self.conv2 = nn.Conv2d(FILTERS,2*FILTERS,KERNEL_SIZE)
         self.dropout = nn.Dropout1d()
         self.out = nn.Linear(INTERNAL,classes)
         self.soft = nn.Softmax(dim=1)
     
     def forward(self,x):
-        x = F.max_pool2d(F.relu(self.conv1(x)),(2,2))
+        x = F.relu(self.conv1(x))
         x = F.max_pool2d(F.relu(self.conv2(x)),(2,2))
         x = torch.flatten(x,1)
         #input layer
@@ -35,3 +43,35 @@ class CNN(nn.Module):
         x = F.relu(self.internal(x))
         x = self.soft(self.out(x))
         return x
+    
+def compute_output_size(input_size, kernel_size, stride=1, padding=0, operation="conv"):
+    """
+    Compute the output size of a matrix after a convolution or max pooling operation.
+
+    Parameters:
+        input_size (tuple): (height, width) of the input matrix.
+        kernel_size (tuple): (kernel_height, kernel_width) of the filter.
+        stride (int): Stride value.
+        padding (int, optional): Padding applied to the input. Default is 0.
+        operation (str): Either "conv" for convolution or "pool" for max pooling.
+
+    Returns:
+        tuple: (output_height, output_width)
+    """
+    H, W = input_size
+    K_h, K_w = kernel_size
+    S = stride
+    P = padding
+
+    if operation == "conv":
+        H_out = ((H - (K_h-1) -1 + 2 * P) // S) + 1
+        W_out = ((W - (K_w-1) -1 + 2 * P) // S) + 1
+    elif operation == "pool":
+        H_out = ((H - (K_h-1)-1) // S) + 1
+        W_out = ((W - (K_w-1)-1) // S) + 1
+    else:
+        raise ValueError("Operation must be 'conv' or 'pool'")
+
+    return H_out, W_out
+
+   

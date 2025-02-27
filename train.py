@@ -15,7 +15,7 @@ import numpy as np
 criterion = nn.CrossEntropyLoss()
 LR = 0.001
 BATCH = 64
-EPOCH = 300
+EPOCH = 50
 PATH = 'dataset2'
 SIZE = 32
 IMG_PATH = 'img_output/'
@@ -120,7 +120,7 @@ def create_dataset():
 
 def main():
     #which dataset to use
-    mode = 'small'
+    mode = 'mnist'
     if mode == 'mnist':
         dataset = vision.datasets.MNIST(root="mnist",download=True,transform=AUGMENT_TRANSFORM)
         global SIZE
@@ -135,7 +135,7 @@ def main():
     global class_num
     class_num = len(dataset.classes)
     net = CNN(class_num,SIZE*SIZE)
-    loss = full_train(dataset,net)
+    loss = full_train(dataset,net,class_num)
     plot_loss(loss)
 
 if __name__ == '__main__':
