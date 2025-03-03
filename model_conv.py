@@ -5,7 +5,7 @@ import torch.nn.functional as F
 INTERNAL = 128
 FILTERS = 9
 IN_CHANNEL_1 = 1
-KERNEL_SIZE = 3
+KERNEL_SIZE = 9
 POOL = 2
 class CNN(nn.Module):
     # classes = # of classses. size = number of img pixels

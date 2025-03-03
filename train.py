@@ -15,13 +15,15 @@ import numpy as np
 criterion = nn.CrossEntropyLoss()
 LR = 0.001
 BATCH = 64
-EPOCH = 50
+EPOCH = 500
 PATH = 'dataset2'
 SIZE = 32
 IMG_PATH = 'img_output/'
 class_num = 0
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+MNIST_MEAN = 0.1307
+MNIST_STD = 0.3081
 
 # Note to self: transforms are applied to each image every single batch. Dataset is the same size but each epoch it sees different data
 # Augmentations: rotation, blur, resizing... others?
@@ -29,11 +31,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 AUGMENT_TRANSFORM = v2.Compose([
     v2.PILToTensor(),
     v2.ToDtype(torch.float32),
-    v2.RandomRotation(degrees=[-15,15]),
-    v2.GaussianNoise(),
-    v2.GaussianBlur(3,(0.1,1.0)),
-    #Just arbitrary values to get the data between [-1,1]. Not sure about this: may be harmful
-    v2.Normalize([0.1307],[0.3081])
+    v2.RandomRotation(degrees=[-45,45]),
+    #v2.RandomApply(transforms=[v2.RandomRotation(degrees=[-45,45])], p=0.75),
+    v2.RandomApply(transforms=[v2.GaussianNoise(mean = MNIST_MEAN,sigma=MNIST_STD)], p=0.25),
+    v2.RandomApply(transforms=[v2.GaussianBlur(3,(0.1,1.0))], p = 0.25),
+    #v2.RandomApply(transforms=[v2.RandomResizedCrop(size=(28,28), scale=(0.6,1.0),ratio=(0.9,1.1))],p=0.5),
+    #mean and std of mnist dataset
+    v2.Normalize([MNIST_MEAN],[MNIST_STD])
 ])
 
 PLAIN_TRANSFORM = v2.Compose([
@@ -45,7 +49,7 @@ def full_train(data, model,class_num):
     #test-train split
     train_data,test_data = torch.utils.data.random_split(data,[0.8,0.2])
     #To test: num_workers, pin_memory, prefetch_factor, persistent_workers
-    train = DataLoader(train_data,batch_size = BATCH,num_workers=8, pin_memory=True, persistent_workers=True)
+    train = DataLoader(train_data,batch_size = BATCH, num_workers=8, pin_memory=True, persistent_workers=True)
     normalize(train)
     test = DataLoader(test_data, num_workers=8, pin_memory=True, persistent_workers=True)    
     optimizer = optim.Adam(model.parameters(),lr=LR)
@@ -54,8 +58,16 @@ def full_train(data, model,class_num):
     loss_over_time = np.zeros((EPOCH,1))
     for epoch in range(EPOCH):
         loss = 0.0
+        D = 0
         for data, labels in train:
+            if D == 100 and epoch%30 == 1:
+                frame = data[0,:,:,:].numpy()
+                frame = (frame+1)/2
+                frame = frame*255//1
+                frame = frame.astype('uint8')
+                io.imsave('img_output/mnist' +str(epoch)+'.png',frame,check_contrast=False)
             loss = train_batch(data.to(device),labels.to(device),model.to(device),optimizer,class_num)
+            D+=1
         loss_over_time[epoch,0] = loss
         if epoch % 50 == 1:
             print(loss)
