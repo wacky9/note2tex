@@ -5,10 +5,10 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import v2
 import torchvision as vision
 from skimage import io
-from data import CustomDataset
-from data import SmallDataset
-from model_nn_basic import NN
-from model_conv import CNN
+from Detect.data import CustomDataset
+from Detect.data import SmallDataset
+from Detect.model_nn_basic import NN
+from Detect.model_conv import CNN
 from matplotlib.pylab import plt
 import time
 import numpy as np

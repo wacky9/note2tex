@@ -5,7 +5,7 @@ from torchvision import transforms
 from PIL import Image
 from skimage import io
 
-from myutils import *
+from old_code.myutils import *
 
 
 # Function to predict label from a frame

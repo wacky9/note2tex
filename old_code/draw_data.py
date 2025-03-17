@@ -1,7 +1,7 @@
 from tkinter import Canvas, Tk, Button
 from PIL import Image, ImageDraw
 import datetime
-from recognition import *
+from old_code.recognition import *
 
 OUTPUT_FOLDER = 'output'
 
