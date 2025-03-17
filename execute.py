@@ -1,6 +1,6 @@
-from preprocessing import *
-from detection import *
-from latex_conv import *
+from Line.preprocessing import *
+from Detect.detection import *
+from Display.latex_conv import *
 import skimage
 from skimage import io
 import torchvision
@@ -8,7 +8,8 @@ import torchvision.transforms.v2.functional as functional
 import numpy as np
 import sys
 import csv
-import latex_conv
+import Display.latex_conv as latex_conv
+from constants import *
 
 def transform_frame(frame):
     #rescale frames to [0,1]
@@ -35,7 +36,7 @@ def main(image_path):
         frame = frame.numpy()
         frame = frame*255//1
         frame = frame.astype('uint8')
-        io.imsave('img_output/frame' +str(i)+'B.png',frame,check_contrast=False)
+        io.imsave(OUTPUT_PATH +'/frame' +str(i)+'B.png',frame,check_contrast=False)
     for line in frames:
         pred_line = []
         model = load_model()

@@ -98,8 +98,8 @@ def generateLatexPdf():
 def performLatexGen():
     
     #Open the generated latex file and the intermediate csv file.
-    latexFile = open("latex.tex", "w")
-    intermediateFile = open("support/intermediate.csv", "r")
+    latexFile = open("../latex.tex", "w")
+    intermediateFile = open("../support/intermediate.csv", "r")
 
     #Output the latex header
     writeFileHeader(latexFile, "Test", "Me")

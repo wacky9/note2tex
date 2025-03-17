@@ -6,6 +6,7 @@ from enum import Enum
 from skimage.measure import label, regionprops
 from collections import namedtuple
 import cv2
+from constants import *
 
 #Determines how to binarize data
 #Assumes images is between [0,1] and grayscale
@@ -287,7 +288,7 @@ def preprocess(Image):
         lines = segment_lines(bin)
         #debugging step
         TEST_LINE = 1
-        io.imsave('img_output/line_test.png',lines[TEST_LINE],check_contrast=False)
+        io.imsave(OUTPUT_PATH + '/line_test.png',lines[TEST_LINE],check_contrast=False)
         frames = []
         for line_num in range(len(lines)):
             line = []
@@ -300,5 +301,5 @@ def preprocess(Image):
             line.clear()
         #debugging step
         for i in range(len(frames[TEST_LINE])):
-            io.imsave('img_output/frame' +str(i)+'.png',frames[TEST_LINE][i],check_contrast=False)
+            io.imsave(OUTPUT_PATH + '/frame' +str(i)+'.png',frames[TEST_LINE][i],check_contrast=False)
         return frames

@@ -1,10 +1,10 @@
-from preprocessing import *
+from Line.preprocessing import *
 import skimage
 from skimage import io
 import numpy as np
 
 
-image_path = 'pipelineTD/TD0_1.png'
+image_path = 'data/pipelineTD/TD0_1.png'
 
 IMAGE = io.imread(image_path)
 frames = preprocess(IMAGE)

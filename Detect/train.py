@@ -18,10 +18,9 @@ BATCH = 64
 EPOCH = 500
 PATH = 'dataset2'
 SIZE = 32
-IMG_PATH = 'img_output/'
 class_num = 0
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+from constants import *
 MNIST_MEAN = 0.1307
 MNIST_STD = 0.3081
 
@@ -65,7 +64,7 @@ def full_train(data, model,class_num):
                 frame = (frame+1)/2
                 frame = frame*255//1
                 frame = frame.astype('uint8')
-                io.imsave('img_output/mnist' +str(epoch)+'.png',frame,check_contrast=False)
+                io.imsave(OUTPUT_PATH + '/mnist' +str(epoch)+'.png',frame,check_contrast=False)
             loss = train_batch(data.to(device),labels.to(device),model.to(device),optimizer,class_num)
             D+=1
         loss_over_time[epoch,0] = loss
@@ -100,7 +99,7 @@ def plot_loss(loss):
     plt.plot(epochs,loss,label='Train Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
-    plt.savefig(IMG_PATH + 'losscurve.png')
+    plt.savefig(OUTPUT_PATH + '/losscurve.png')
 
 
 def get_mean(loader):
