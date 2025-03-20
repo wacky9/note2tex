@@ -1,4 +1,4 @@
-from Line.preprocessing import *
+from Line.line_detection import preprocess
 from Detect.detection import *
 from Display.latex_conv import *
 import skimage

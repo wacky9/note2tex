@@ -3,3 +3,8 @@
 
 #Paths must be changed 
 OUTPUT_PATH = '/home/winstonbs/ai/note2tex/img_output'
+
+#modes for line detection
+
+RULED_MODE = 0
+NEAT_MODE = 1
