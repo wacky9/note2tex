@@ -8,3 +8,5 @@ OUTPUT_PATH = '/home/winstonbs/ai/note2tex/img_output'
 
 RULED_MODE = 0
 NEAT_MODE = 1
+
+SIZE = (28,28)
