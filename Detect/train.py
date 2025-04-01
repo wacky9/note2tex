@@ -5,13 +5,20 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import v2
 import torchvision as vision
 from skimage import io
-from Detect.data import CustomDataset
-from Detect.data import SmallDataset
-from Detect.model_nn_basic import NN
-from Detect.model_conv import CNN
+from data import CustomDataset
+from data import SmallDataset
+from model_nn_basic import NN
+from model_conv import CNN
+from model_conv2 import CNN2
 from matplotlib.pylab import plt
 import time
 import numpy as np
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from constants import * # Assuming module_a is in the root
+
+
 criterion = nn.CrossEntropyLoss()
 LR = 0.001
 BATCH = 64
@@ -20,7 +27,6 @@ PATH = 'dataset2'
 SIZE = 32
 class_num = 0
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-from constants import *
 MNIST_MEAN = 0.1307
 MNIST_STD = 0.3081
 
@@ -52,7 +58,8 @@ def full_train(data, model,class_num):
     normalize(train)
     test = DataLoader(test_data, num_workers=8, pin_memory=True, persistent_workers=True)    
     optimizer = optim.Adam(model.parameters(),lr=LR)
-    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+    #scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.9, patience=10, verbose=True)
     # train
     loss_over_time = np.zeros((EPOCH,1))
     for epoch in range(EPOCH):
@@ -70,7 +77,7 @@ def full_train(data, model,class_num):
         loss_over_time[epoch,0] = loss
         if epoch % 50 == 1:
             print(loss)
-        scheduler.step()
+        scheduler.step(loss)
     
     # test
     correct = 0 
@@ -145,7 +152,7 @@ def main():
     
     global class_num
     class_num = len(dataset.classes)
-    net = CNN(class_num,SIZE*SIZE)
+    net = CNN2(class_num,SIZE*SIZE)
     loss = full_train(dataset,net,class_num)
     plot_loss(loss)
 

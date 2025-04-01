@@ -1,8 +1,8 @@
 # Handles the neural network aspect of the project
 from enum import Enum
-from Detect.model_nn_basic import NN
-from Detect.model_conv import CNN
-from Detect.train import full_train, create_dataset
+from model_nn_basic import NN
+from model_conv import CNN
+from train import full_train, create_dataset
 import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

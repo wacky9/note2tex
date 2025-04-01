@@ -34,7 +34,6 @@ def segment_lines(bin):
     divider_indices = divider_indices[:,0]
     print("hello")
 
-
 def detect(Image):
     IM = Image
     bin = binarize(IM)>THRESHOLD
